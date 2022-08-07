@@ -1,0 +1,86 @@
+[
+    {
+        "name": "Brobnar",
+        "primaryColor": "f4322b",
+        "secondaryColor": "f16b32",
+        "textBackgroundColor": "fee3a7",
+        "iconname": "brobnar_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Dis",
+        "primaryColor": "d40260",
+        "secondaryColor": "414449",
+        "textBackgroundColor": "efc5cf",
+        "iconname": "dis_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Logos",
+        "primaryColor": "009cc6",
+        "secondaryColor": "d97431",
+        "textBackgroundColor": "f1eed9",
+        "iconname": "logos_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Mars",
+        "primaryColor": "75b745",
+        "secondaryColor": "624399",
+        "textBackgroundColor": "eceade",
+        "iconname": "mars_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Sanctum",
+        "primaryColor": "1f4895",
+        "secondaryColor": "3587c0",
+        "textBackgroundColor": "f4eeb9",
+        "iconname": "sanctum_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Saurian",
+        "primaryColor": "129888",
+        "secondaryColor": "d6ba55",
+        "textBackgroundColor": "ebe9d1",
+        "iconname": "saurian_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Shadows",
+        "primaryColor": "413e6e",
+        "secondaryColor": "deae4e",
+        "textBackgroundColor": "dfd9c9",
+        "iconname": "shadows_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Star Alliance",
+        "primaryColor": "e99922",
+        "secondaryColor": "3b518b",
+        "textBackgroundColor": "e7e1d6",
+        "iconname": "star_alliance_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Untamed",
+        "primaryColor": "e05025",
+        "secondaryColor": "188050",
+        "textBackgroundColor": "d4e0d6",
+        "iconname": "untamed_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Unfathomable",
+        "primaryColor": "2c366b",
+        "secondaryColor": "b9609b",
+        "textBackgroundColor": "e3ebee",
+        "iconname": "unfathomable_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Custom",
+        "isstandard": "false"
+    }
+]

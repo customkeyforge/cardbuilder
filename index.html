@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Map</title>
+    <link rel="stylesheet" href="index.css">
+    <script src="vanilla-picker.csp.min.js"></script>
+     <link  href="vanilla-picker.csp.css" rel="stylesheet">
+     <script type="text/javascript" src="cropper.js"></script>
+    <script type="module" src="load.js" crossorigin="anonymous"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/client-zip/index.js"></script>
+
+    <script type="text/javascript" src="cardTypes.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="jsonOps.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="imageProcessing.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="text_on_curve.js"></script>
+    <style>
+     .color-picker__dialog--no-alpha .color-picker__control--a {
+       display: none;
+     }
+   </style>
+</head>
+<body background-color="red">
+     <main>
+          <div>Import deck from a JSON file <input id="importJSON" type="file"/></div>
+          <div>Export deck to a JSON file <input id="exportJSON" type="button" value="Export..."/></div>
+          <div>Export deck for printing<input id="exportZip" type="button" value="Export For Printing..."/></div>
+          <div id="globalmessage"></div>
+          <div id="global">
+               <input id="deckname"/>
+               <select id="globalpreset"></select>
+               <div id="colorDiv" style="display: none;">
+                    <select id="globaliconpreset"></select>
+                    <div id="globalcustomicondiv" style="display: none;">
+                         <input id="globalcustomiconpicker" type="file"/>
+                         <img id="globalcustomiconimg" width="50"/>
+                    </div>
+                    
+                    <span id="parent">Primary Color: #ff0</span>
+                    <span id="secondaryparent">Secondary Color: #ff0</span>
+                    <span id="textBackgroundparent">Text Background Color: #ff0</span>
+               </div>
+          </div>
+          <input id="addcard" type="button" value="Add New Card"/> 
+          <div  id="cardlist">
+               
+          </div>
+     </main>
+     
+     <div style="display:none;">
+          <canvas origin-clean="true"  width="242" height="273" id="pipcanvas"></canvas>
+          <canvas origin-clean="true"  width="5000" height="5000" id="colorswapcanvas"></canvas>
+          <canvas origin-clean="true" style="display:none;" width="400" height="400" id="textbadgecanvas"></canvas>
+
+        <img id="aember"
+             src="aember.png" crossorigin="anonymous"/>
+        <img id="damage"
+             src="damage.png" crossorigin="anonymous"/>
+        <img id="frame"
+             src="frame.png" crossorigin="anonymous"/>
+             <img id="action_primary_solid" src="action_primary_solid.png" crossorigin="anonymous"/>
+             <img id="action_primary_alpha" src="action_primary_alpha.png" crossorigin="anonymous"/>
+             <img id="1pip_solid" src="1pip_solid.png" crossorigin="anonymous"/>
+             <img id="1pip_aember" src="1pip_aember.png" crossorigin="anonymous"/>
+
+             <img id="action_secondary_solid" src="action_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="action_secondary_alpha" src="action_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="upgrade_secondary_solid" src="upgrade_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="upgrade_secondary_alpha" src="upgrade_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="upgrade_text_background_solid" src="upgrade_text_background_solid.png" crossorigin="anonymous"/>
+             <img id="upgrade_text_background_alpha" src="upgrade_text_background_alpha.png" crossorigin="anonymous"/>
+             
+             <img id="artifact_secondary_solid" src="artifact_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary_alpha" src="artifact_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary2_solid" src="artifact_secondary2_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary2_alpha" src="artifact_secondary2_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_text_background_solid" src="artifact_text_background_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_text_background_alpha" src="artifact_text_background_alpha.png" crossorigin="anonymous"/>
+             
+             <img id="artifact_upgrade_primary_solid" src="artifact_upgrade_primary_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_primary_alpha" src="artifact_upgrade_primary_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_banner_solid" src="artifact_upgrade_banner_solid2.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_banner_alpha" src="artifact_upgrade_banner_alpha.png" crossorigin="anonymous"/>
+
+             
+             <img id="creature_secondary_solid" src="creature_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="creature_secondary_alpha" src="creature_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="creature_primary_solid" src="creature_primary_solid.png" crossorigin="anonymous"/>
+             <img id="creature_primary_alpha" src="creature_primary_alpha.png" crossorigin="anonymous"/>
+             <img id="power_defense" src="power_defense.png" crossorigin="anonymous"/>
+             <img id="action_swoop"
+             src="action_swoop.png" crossorigin="anonymous"/>
+             <img src="brobnar_faction_icon.png" crossorigin="anonymous"/>
+             <img src="dis_faction_icon.png" crossorigin="anonymous"/>
+             <img src="logos_faction_icon.png" crossorigin="anonymous"/>
+             <img src="mars_faction_icon.png" crossorigin="anonymous"/>
+             <img src="sanctum_faction_icon.png" crossorigin="anonymous"/>
+             <img src="saurian_faction_icon.png" crossorigin="anonymous"/>
+             <img src="shadows_faction_icon.png" crossorigin="anonymous"/>
+             <img src="star_alliance_faction_icon.png" crossorigin="anonymous"/>
+             <img src="untamed_faction_icon.png" crossorigin="anonymous"/>
+             <img src="unfathomable_faction_icon.png" crossorigin="anonymous"/>
+
+        <img id="action_secondary"
+             src="action_secondary.png" crossorigin="anonymous"/>
+        <img id="action_text_background_solid"
+                  src="action_text_background_solid.png" crossorigin="anonymous"/>
+        <img id="action_text_background_alpha"
+                  src="action_text_background_alpha.png" crossorigin="anonymous"/>
+      </div>
+      
+</body>
+</html>

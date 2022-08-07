@@ -1,0 +1,68 @@
+@font-face {
+    font-family: 'QuicksandMedium';
+    src: url('./Quicksand-Medium.ttf');
+}
+@font-face {
+    font-family: 'QuicksandRegular';
+    src: url('./Quicksand-Regular.ttf');
+}
+@font-face {
+    font-family: 'RopaSansRegular';
+    src: url('./RopaSans-Regular.ttf');
+}
+@font-face {
+    font-family: 'Bombardier';
+    src: url('./Bombardier.otf');
+}
+
+
+  #globalmessage{
+    height: 200px;
+    overflow:auto;
+    display: flex;
+    flex-direction: column-reverse;
+    }
+
+  .accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+  }
+
+  .label {
+      width: 150px;
+      text-align: end;
+      vertical-align: middle;
+      display: inline-block; 
+  }
+  
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .accordion:hover {
+    background-color: #ccc;
+  }
+
+  .accordion:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    font-size: 13px;
+    color: #777;
+    float: right;
+    margin-left: 5px;
+  }
+  
+  .active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+  }
+
+  /* Style the accordion panel. Note: hidden by default */
+.cardcontainer {
+    padding: 0 18px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+  }
