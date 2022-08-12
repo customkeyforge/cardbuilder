@@ -15,14 +15,117 @@
     src: url('./Bombardier.otf');
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
-  #globalmessage{
-    height: 200px;
-    overflow:auto;
-    display: flex;
-    flex-direction: column-reverse;
-    }
+*{
+    list-style: none;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
 
+body{
+    background: #f5f6fa;
+}
+
+textarea {
+  width:500px;
+  height: 200px;
+}
+
+#menudiv{
+    background: rgb(5, 68, 104);
+    top: 0;
+    left: 0;
+    width: 225px;
+    height: 100%;
+    padding: 20px 0;
+    overflow:scroll ;
+    transition: all 0.5s ease;
+}
+
+#mainContent{
+  display: block;
+}
+
+#menudiv ul li a{
+  display: block;
+  padding: 13px 30px;
+  border-bottom: 1px solid #10558d;
+  color: rgb(241, 237, 237);
+  font-size: 16px;
+  position: relative;
+}
+
+#menudiv ul li a:hover,
+#menudiv ul li a.active{
+    color: #0c7db1;
+
+    background:white;
+    border-right: 2px solid rgb(5, 68, 104);
+}
+
+#menudiv ul li a:hover .icon,
+#menudiv ul li a.active .icon{
+    color: #0c7db1;
+}
+
+#menudiv ul li a:hover:before,
+#menudiv ul li a.active:before{
+    display: block;
+}
+
+/*
+.flex-container {
+  display: flex;
+}
+
+.flex-child {
+  flex: 1;
+  border: 2px solid yellow;
+}  
+
+.flex-child:first-child {
+  flex: 0.15;
+  margin-right: 20px;
+} 
+*/
+#deleteCard {
+  float: right;
+}
+
+
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(6,);
+  grid-auto-rows: minmax(0px, auto);
+}
+.sidebar {
+  grid-column: 1 / 4;
+  grid-row: 1 / 500;
+}
+
+.deleteCarddiv {
+  grid-column: 6 / 7;
+  grid-row: 1;
+}
+
+.bigcanvasdiv {
+  justify-self: center;
+  grid-column: 4 / 7;
+  grid-row: 2 / 500;
+}
+
+  .label {
+      width: 160px;
+      text-align: end;
+      vertical-align: top;
+      display: inline-block; 
+  }
+  
   .accordion {
     background-color: #eee;
     color: #444;
@@ -35,34 +138,86 @@
     transition: 0.4s;
   }
 
-  .label {
-      width: 150px;
-      text-align: end;
-      vertical-align: middle;
-      display: inline-block; 
-  }
-  
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .accordion:hover {
-    background-color: #ccc;
-  }
-
-  .accordion:after {
-    content: '\02795'; /* Unicode character for "plus" sign (+) */
-    font-size: 13px;
-    color: #777;
-    float: right;
-    margin-left: 5px;
-  }
-  
-  .active:after {
-    content: "\2796"; /* Unicode character for "minus" sign (-) */
-  }
-
   /* Style the accordion panel. Note: hidden by default */
 .cardcontainer {
     padding: 0 18px;
-    background-color: white;
     display: none;
     overflow: hidden;
   }
+
+  
+.cardsection {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+}
+
+  /*I love me some border-box*/
+* {
+  box-sizing: border-box;
+}
+/*This just stops me getting horizontal scrolling if anything overflows the width*/
+body {
+  overflow-x: hidden;
+}
+/*Just removing default browser padding/margin*/
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+#globalmessage{
+  height: 0px;
+  overflow:auto;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+}
+
+/*Flexbox gives us the flexiness we need. The top just stays put as there is no scrolling on the body due to the page never exceeding viewport height*/
+#globalmessagecontainer {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  z-index: 10;
+  height: 0px;
+  width: 100%;
+}
+/*This is our main wrapping element, it's made 100vh high to ensure it is always the correct size and then moved into place and padded with negative margin and padding*/
+#pagewrapper {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+  margin-bottom: -0px;
+  padding-bottom: 0px;
+  position: relative;
+  width: 100%;
+  backface-visibility: hidden;
+  will-change: overflow;
+}
+/*All the scrollable sections should overflow and be whatever height they need to be. As they are flex-items (due to being inside a flex container) they could be made to stretch full height at all times if needed.
+WebKit inertia scrolling is being added here for any present/future devices that are able to make use of it.
+*/
+#menudiv,
+#maincontent {
+  overflow: auto;
+  height: auto;
+  padding: .5rem;
+  -ms-overflow-style: none;
+}
+/*Entirely optional – just wanted to remove the scrollbar on WebKit browsers as I find them ugly*/
+#menudiv::-webkit-scrollbar,
+#maincontent::-webkit-scrollbar {
+  display: none;
+}
+/*  Left and Right are set sizes while the Middle is set to flex one so it occupies all remaining space. This could be set as a width too if prefereable, perhaps using calc.*/
+#menudiv {
+  width: 12.5rem;
+}
+
+#maincontent {
+  flex: 1;
+}
+

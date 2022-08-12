@@ -1,5 +1,5 @@
 /** load.js */
-var bigcanvas, smallcanvas, bigcontext, smallcontext;
+var bigcanvas, bigcontext;
 var aemberImage = null;
 var damageImage = null;
 var pipSolidImage = null;
@@ -26,7 +26,8 @@ var controlBold = "\u001E";
 var controlItalic = "\u001D";
 var controlAember = "\u001F";
 var controlDamage = "\u001C";
-import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js"
+import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
+import { cardElement } from "./utils.js"
 
 class ColorManager {
     #parent = {};
@@ -129,8 +130,19 @@ class CardContainer {
     constructor(cardId, cardObj, images) {
         this.cardId = cardId;
         let cardlist = document.getElementById("cardlist");
-        let createChild = (parent, elementType, id, className, appendnewline, labelText) => {
-            if (labelText != null && labelText != "") {
+        let createChild = (parent, elementType, id, className, appendnewline, labelText, forceDiv) => {
+            let useDiv = forceDiv != null && forceDiv == true;
+            let useLabel = labelText != null && labelText != "";
+            if (useLabel)
+                useDiv = true;  
+
+            if (useDiv) {
+                let fulldiv = document.createElement("div");
+                fulldiv.className = `${id}div`
+                parent.appendChild(fulldiv);
+                parent = fulldiv;
+            }
+            if (useLabel) {
                 let labelspan = document.createElement("span");
                 labelspan.textContent = labelText;
                 labelspan.className = `label`;
@@ -144,103 +156,173 @@ class CardContainer {
                 this.newline(parent);
             return newkid;
         };
-        let getDescriptionForAccordion = () => {
-            return `${ctitle.value} (${typeSelector.value}), ${quantitySelector.value} copies`
+        let createAccordion = (title, parent, populateFunction) => {
+            let acc = createChild(parent, "button", "accButton", "accordion");
+            acc.value = acc.textContent = title;
+            let section = createChild(parent, "div", "", "cardsection");
+            acc.addEventListener("click", function() {
+                this.classList.toggle("active");
+                if (section.style.display === "block") {
+                    section.style.display = "none";
+                } else {
+                    section.style.display = "block";
+                }
+            }); 
+            populateFunction(section);
+        }
+        let getDescriptionForMenu = () => {
+            return `${ctitle.value} (${typeSelector.value}), ${quantitySelector.value} cop${(parseInt(quantitySelector.value) ?? 0) > 1 ? "ies" : "y"}`
         };
-        let acc = createChild(cardlist, "button", "accButton", "accordion");
-        acc.addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-                artcan.style.display="none";
-            } else {
-                panel.style.display = "block";
+        let menu = document.getElementById("menu");
+        let acc = createChild(menu, "li", "", "cardSelector");
+        let sublink = createChild(acc, "a", "", "");
+        sublink.href = `#${cardId}`;
+
+        let toplevel = createChild(cardlist, "div", cardId, "cardcontainer");
+        toplevel.style.display = "none";
+        let cc = createChild(toplevel, "div", "", "wrapper");
+
+        let typeSelector = {};
+        let quantitySelector = {};
+        let ctitle = {};
+        let ctext = {};
+        let ctraits = {};
+        let cpower = {};
+        let carmor = {};
+        let aemberSelector = {};
+        let flavorText = {};
+
+        let customCheck = {};
+        let customPreset = {};
+        let iconPreset = {};
+        let customIconFilePicker = {};
+        let customIconImg = {};
+        let customCardBackFilePicker = {};
+        let customCardBackImg = {};
+        let artFilePicker = {};
+        let artcan = {};
+        let artSourceImg = {};
+        let artImg = {};
+        let customDiv = {};
+        let colorDiv = {};
+        let customIconDiv = {};
+        let customTypeName = {};
+        let sideBar = createChild(cc, "div", "sidebar", "sidebar");
+
+        createAccordion("Card Details", sideBar, (section) => {
+            typeSelector = createChild(section, "select", `cardType`, "", false, "Card Type: ");
+            cardTypes.forEach(type => {
+                let t = createChild(typeSelector, "option", `${type.typeName}`, "", false); t.value = type.typeName; t.textContent = type.typeName;
+            });
+            typeSelector.value= cardObj.cardType ?? "Action";
+            ctitle = createChild(section, "input", "cardTitle", "", false, "Title: ");
+            ctitle.value = cardObj.title;
+            quantitySelector = createChild(section, "select", `quantity`, "", false, "Quantity: ");
+            {
+                let zer = createChild(quantitySelector, "option", "0", "", false); zer.value = 0; zer.textContent = "0";
+                let one = createChild(quantitySelector, "option", "1", "", false); one.value = 1; one.textContent = "1";
+                let two = createChild(quantitySelector, "option", "2", "", false); two.value = 2; two.textContent = "2";
+                let thr = createChild(quantitySelector, "option", "3", "", false); thr.value = 3; thr.textContent = "3";
+                let fou = createChild(quantitySelector, "option", "4", "", false); fou.value = 4; fou.textContent = "4";
+                let fiv = createChild(quantitySelector, "option", "5", "", false); fiv.value = 5; fiv.textContent = "5";
+                let six = createChild(quantitySelector, "option", "6", "", false); six.value = 6; six.textContent = "6";
+                let sev = createChild(quantitySelector, "option", "7", "", false); sev.value = 7; sev.textContent = "7";
+                let eig = createChild(quantitySelector, "option", "8", "", false); eig.value = 8; eig.textContent = "8";
+                let nin = createChild(quantitySelector, "option", "9", "", false); nin.value = 9; nin.textContent = "9";
             }
-        }); 
-        cardlist.appendChild(acc);
-        let cc = createChild(cardlist, "div", cardId, "cardcontainer");
-        let typeSelector = createChild(cc, "select", `cardType`, "", false, "Card Type: ");
-        cardTypes.forEach(type => {
-            let t = createChild(typeSelector, "option", `${type.typeName}`, "", false); t.value = type.typeName; t.textContent = type.typeName;
+            quantitySelector.value = cardObj.quantity;
+            ctraits = createChild(section, "input", "cardTraits", "", false, "Traits: ");
+            ctraits.value = cardObj.traits ?? "";
+            cpower = createChild(section, "input", "cardPower", "", false, "Power: ");
+            cpower.value = cardObj.power ?? "";
+            carmor = createChild(section, "input", "cardArmor", "", true, "Armor: ");
+            carmor.value = cardObj.armor ?? "";
+
+            ctext = createChild(section, "textarea", "cardText", "", true, "Card Text: ");
+            ctext.value = cardObj.text;
+
         });
-        typeSelector.value= cardObj.cardType ?? "Action";
-        let ctitle = createChild(cc, "input", "cardTitle", "", false, "Title: ");
-        ctitle.value = cardObj.title;
-        let quantitySelector = createChild(cc, "select", `quantity`, "", true, "Quantity: ");
-        {
-            let zer = createChild(quantitySelector, "option", "0", "", false); zer.value = 0; zer.textContent = "0";
-            let one = createChild(quantitySelector, "option", "1", "", false); one.value = 1; one.textContent = "1";
-            let two = createChild(quantitySelector, "option", "2", "", false); two.value = 2; two.textContent = "2";
-            let thr = createChild(quantitySelector, "option", "3", "", false); thr.value = 3; thr.textContent = "3";
-            let fou = createChild(quantitySelector, "option", "4", "", false); fou.value = 4; fou.textContent = "4";
-            let fiv = createChild(quantitySelector, "option", "5", "", false); fiv.value = 5; fiv.textContent = "5";
-            let six = createChild(quantitySelector, "option", "6", "", false); six.value = 6; six.textContent = "6";
-            let sev = createChild(quantitySelector, "option", "7", "", false); sev.value = 7; sev.textContent = "7";
-            let eig = createChild(quantitySelector, "option", "8", "", false); eig.value = 8; eig.textContent = "8";
-            let nin = createChild(quantitySelector, "option", "9", "", false); nin.value = 9; nin.textContent = "9";
-        }
-        quantitySelector.value = cardObj.quantity;
-        let ctraits = createChild(cc, "input", "cardTraits", "", true, "Traits: ");
-        ctraits.value = cardObj.traits ?? "";
-        let cpower = createChild(cc, "input", "cardPower", "", true, "Power: ");
-        cpower.value = cardObj.power ?? "";
-        let carmor = createChild(cc, "input", "cardArmor", "", true, "Armor: ");
-        carmor.value = cardObj.armor ?? "";
-        let ctext = createChild(cc, "textarea", "cardText", "", true, "Card Text: ");
-        ctext.value = cardObj.text;
 
-        let aemberSelector = createChild(cc, "select", `aemberCount`, "", true, "Bonus Aember: ");
-        {
-            let zer = createChild(aemberSelector, "option", "0", "", false); zer.value = 0; zer.textContent = "0";
-            let one = createChild(aemberSelector, "option", "1", "", false); one.value = 1; one.textContent = "1";
-            let two = createChild(aemberSelector, "option", "2", "", false); two.value = 2; two.textContent = "2";
-            let thr = createChild(aemberSelector, "option", "3", "", false); thr.value = 3; thr.textContent = "3";
-        }
-        aemberSelector.value = cardObj.aemberCount;
-        let flavorText = createChild(cc, "textarea", "flavorText", "", true, "Flavor Text");
-        flavorText.value = cardObj.flavorText ?? "";
-
-        createChild(cc, "textarea", "cardNotes", "", true, "Notes: ").value = cardObj.notes ?? "";
-        let customCheck = createChild(cc, "input", "customCheckbox", "", false);
-        customCheck.type="checkbox";
-        let customLabel = createChild(cc, "label", "", "", true);
-        customLabel.setAttribute("for", "customCheckbox");
-        customLabel.textContent = "Custom Look";
-
-        let customDiv = createChild(cc, "div", "customDiv", "", false);
+        createAccordion("Extras", sideBar, (section) => {
+            aemberSelector = createChild(section, "select", `aemberCount`, "", false, "Bonus Aember: ");
+            {
+                let zer = createChild(aemberSelector, "option", "0", "", false); zer.value = 0; zer.textContent = "0";
+                let one = createChild(aemberSelector, "option", "1", "", false); one.value = 1; one.textContent = "1";
+                let two = createChild(aemberSelector, "option", "2", "", false); two.value = 2; two.textContent = "2";
+                let thr = createChild(aemberSelector, "option", "3", "", false); thr.value = 3; thr.textContent = "3";
+            }
+            aemberSelector.value = cardObj.aemberCount;
             
-            let customPreset = createChild(customDiv, "select", `${cardId}cardPreset`, "presetSelector", false);
-                let colorDiv = createChild(customDiv, "div", "colorDiv", "", false);
 
-                let iconPreset = createChild(colorDiv, "select", `${cardId}iconPreset`, "presetSelector", false);
-                let customIconDiv = createChild(colorDiv, "div", "customIconDiv", "", false);
-                    
-                    let customIconFilePicker = createChild(customIconDiv, "input", "customIconFilePicker", "presetSelector", false);
-                    customIconFilePicker.type="file";
-                    let customIconImg = createChild(customIconDiv, "img", "customIconImg", "", false);
-                    customIconImg.width = 50;
-                let prim = createChild(colorDiv, "span", "primarycolor", "", true);
-                let sec = createChild(colorDiv, "span", "secondarycolor", "", true);
-                let textbg = createChild(colorDiv, "span", "textbgcolor", "", true);
-        let bigcan = createChild(cc, "canvas", "bigcanvas", "", false);
+            flavorText = createChild(section, "textarea", "flavorText", "", false, "Flavor Text: ");
+            flavorText.value = cardObj.flavorText ?? "";
+        });
+        createAccordion("Customize Look", sideBar, (section) => {
+            let customizationDiv = createChild(section, "div", "customizationdiv", "customizationdiv", false);
+            customCheck = createChild(customizationDiv, "input", "customCheckbox", "", false);
+            customCheck.type="checkbox";
+            let customLabel = createChild(customizationDiv, "label", "", "", true);
+            customLabel.setAttribute("for", "customCheckbox");
+            customLabel.textContent = "Custom Look";
+
+            customDiv = createChild(customizationDiv, "div", "customDiv", "", true);
+                customTypeName = createChild(customDiv, "input", "customTypeName", "", true, "Custom Type Name: ");
+                customCardBackFilePicker = createChild(customDiv, "input", "customCardBackFilePicker", "", false);
+                customCardBackFilePicker.type="file";
+                customCardBackImg = createChild(customDiv, "img", "customCardBackImg", "", true);
+                customCardBackImg.height = 100;
+
+                customPreset = createChild(customDiv, "select", `${cardId}cardPreset`, "presetSelector", false, "House: ");
+                    colorDiv = createChild(customDiv, "div", "colorDiv", "", false);
+
+                    iconPreset = createChild(colorDiv, "select", `${cardId}iconPreset`, "presetSelector", false, "Custom Icon: ");
+                    customIconDiv = createChild(colorDiv, "div", "customIconDiv", "", false);
+                        
+                        customIconFilePicker = createChild(customIconDiv, "input", "customIconFilePicker", "presetSelector", false);
+                        customIconFilePicker.type="file";
+                        customIconImg = createChild(customIconDiv, "img", "customIconImg", "", false);
+                        customIconImg.width = 50;
+                    createChild(colorDiv, "span", "primarycolor", "", true);
+                    createChild(colorDiv, "span", "secondarycolor", "", true);
+                    createChild(colorDiv, "span", "textbgcolor", "", true);
+        });
+        createAccordion("Art", sideBar, (section) => {
+            let cardArtDiv = createChild(section, "div", "cardArtDiv", "cardArtDiv", false,);
+
+            artFilePicker = createChild(cardArtDiv, "input", "artFilePicker", "", false, "Choose Card Art");
+            artFilePicker.type="file";
+            artcan = createChild(cardArtDiv, "canvas", "artcanvas", "", true);
+            artcan.width=357; artcan.height=500;  artcan.style.display="none"; 
+            artcan.style.width="357px"; artcan.style.height="500px";
+            artSourceImg = createChild(cardArtDiv, "img", "artSourceImg", "", false);
+            artSourceImg.style.display="none";
+            artImg = createChild(cardArtDiv, "img", "artImg", "", true);
+            artImg.style.display="none";
+        });
+
+        createAccordion("Notes", sideBar, (section) => {
+            createChild(section, "textarea", "cardNotes", "", true, "Notes: ").value = cardObj.notes ?? "";
+        });   
+
+        let deleteButton = createChild(cc, "input", "deleteCard", "", true, "", true);
+        deleteButton.type = "button";
+        deleteButton.value = "Delete Card";
+        deleteButton.onclick = () => {
+            if (confirm(`Are you sure you want to delete "${ctitle.value}"?`)) {
+                toplevel.remove();
+                acc.remove();
+            }
+        };
+
+        let bigcan = createChild(cc, "canvas", "bigcanvas", "", false, "", true);
         bigcan.width=715; bigcan.height=1000; //bigcan.style.display="none";
 
-        let smallcan = createChild(cc, "canvas", "smallcanvas", "", false);
-        smallcan.width=357; smallcan.height=500; smallcan.style.display="none";//this.newline(cc);
-        
-        let artFilePicker = createChild(cc, "input", "artFilePicker", "", false);
-        artFilePicker.type="file";
-        let artcan = createChild(cc, "canvas", "artcanvas", "", true);
-        artcan.width=357; artcan.height=500;  artcan.style.display="none"; 
-        let artSourceImg = createChild(cc, "img", "artSourceImg", "", false);
-        artSourceImg.style.display="none";
-        let artImg = createChild(cc, "img", "artImg", "", false);
-        artImg.style.display="none";
-        
+        let displayHeight = 700;
+        bigcan.style.width=`${bigcan.width * (displayHeight / 1000)}px`; bigcan.style.height=`${displayHeight}px`;
+           
         ctitle.oninput = quantity.oninput = throttle(function (e) {
-            acc.textContent = getDescriptionForAccordion();
-            drawParentOf(ctitle);
+            sublink.textContent = getDescriptionForMenu();
+            drawAsync(cardId);
         }, 1000);
         let showTraits = (typeName) => {
             let cardType = cardTypes.filter((t) => t.typeName == typeName)[0];
@@ -263,30 +345,33 @@ class CardContainer {
         aemberSelector.onchange = typeSelector.onchange = () => {
             showTraits(typeSelector.value);
             showPower(typeSelector.value);
-            acc.textContent = getDescriptionForAccordion();
-            drawParentOf(ctext);
+            sublink.textContent = getDescriptionForMenu();
+            drawAsync(cardId);
         };
-        cardPower.oninput = cardArmor.oninput = flavorText.oninput = ctraits.oninput = ctext.oninput = throttle(() => {
-            drawParentOf(ctext);
+        customTypeName.oninput = cardPower.oninput = cardArmor.oninput = flavorText.oninput = ctraits.oninput = ctext.oninput = throttle(() => {
+            drawAsync(cardId);
         }, 1000);
         customCheck.onchange = (e) => {
             if (customCheck.checked == true)
                 customDiv.style.display = "inline";
             else
                 customDiv.style.display = "none";
-            draw(cardId);
+            drawAsync(cardId);
         };
    
         artImg.onload = () => {
-            draw(cardId);
+            if (toplevel.style.display != "none")
+                drawAsync(cardId);
         };
-        cardlist.appendChild(cc);
 
-        hookupImageLoadFromFile(`#${cardId} > #customDiv > #colorDiv > #customIconDiv > #customIconFilePicker`, customIconImg, (iconname) => {
-            cc.setAttribute("customIcon", iconname);
+        hookupImageLoadFromFile(`#${cardId} #customIconFilePicker`, customIconImg, (iconname) => {
+            toplevel.setAttribute("customIcon", iconname);
+        });
+        
+        hookupImageLoadFromFile(`#${cardId} #customCardBackFilePicker`, customCardBackImg, () => {
         });
 
-        hookupImageLoadFromFile(`#${cardId} > #artFilePicker`, artSourceImg, () => {}, () => {
+        hookupImageLoadFromFile(`#${cardId} #artFilePicker`, artSourceImg, () => {}, () => {
             artcan.width = artSourceImg.naturalWidth;
             artcan.height = artSourceImg.naturalHeight;
             artcan.style.display="inline";
@@ -325,7 +410,7 @@ class CardContainer {
             if (overrides.customIconData != null)
             {
                 customIconImg.src = images[overrides.customIconData];
-                cc.setAttribute("customIcon", customIconImg.src.substring(customIconImg.src.length - 15));
+                toplevel.setAttribute("customIcon", customIconImg.src.substring(customIconImg.src.length - 15));
             }
         }
         else if (overrides.preset != null && overrides.preset != "") {
@@ -336,28 +421,33 @@ class CardContainer {
             primcolor = parseColor(selectedPreset.primaryColor);
             seccolor = parseColor(selectedPreset.secondaryColor);
             textbgcolor = parseColor(selectedPreset.textBackgroundColor);
-            cc.setAttribute("customIcon", selectedPreset.iconname);
+            toplevel.setAttribute("customIcon", selectedPreset.iconname);
         }
+        if (overrides != null && overrides.customCardBack != null && overrides.customCardBack != "")
+            customCardBackImg.src = images[overrides.customCardBack];
 
-        let cardSecColorMan = new ColorManager(`#${cardId} > #customDiv > #colorDiv > #secondarycolor`, "Secondary Color", seccolor);
-        let cardTextBgColorMan = new ColorManager(`#${cardId} > #customDiv > #colorDiv > #textbgcolor`, "Text Background Color", textbgcolor);
-        let cardPrimColorMan = new ColorManager(`#${cardId} > #customDiv > #colorDiv > #primarycolor`, "Primary Color", primcolor);
+        let cardSecColorMan = new ColorManager(`#${cardId} #secondarycolor`, "Secondary Color", seccolor);
+        let cardTextBgColorMan = new ColorManager(`#${cardId} #textbgcolor`, "Text Background Color", textbgcolor);
+        let cardPrimColorMan = new ColorManager(`#${cardId} #primarycolor`, "Primary Color", primcolor);
 
-        setPresetOptions(customPreset, "colorDiv", (presetObj) => {
+        setPresetOptions(customPreset, `#${cardId} #colorDiv`, (presetObj) => {
             if (presetObj.primaryColor != null) {
                 cardPrimColorMan.setColor(parseColor(presetObj.primaryColor));
                 cardSecColorMan.setColor(parseColor(presetObj.secondaryColor));
                 cardTextBgColorMan.setColor(parseColor(presetObj.textBackgroundColor));
             }
-            cc.setAttribute("customIcon", presetObj.iconname);
+            toplevel.setAttribute("customIcon", presetObj.iconname);
         });
-        setPresetOptions(iconPreset, "customIconDiv", (presetObj) => {
+        setPresetOptions(iconPreset, `#${cardId} #customIconDiv`, (presetObj) => {
             if (iconPreset.value != "Custom")
-                cc.setAttribute("customIcon", presetObj.iconname);
+                toplevel.setAttribute("customIcon", presetObj.iconname);
             else
-                cc.setAttribute("customIcon", customIconImg.src.substring(customIconImg.src.length - 15));
-            draw(cardId);
+                toplevel.setAttribute("customIcon", customIconImg.src.substring(customIconImg.src.length - 15));
+            drawAsync(cardId);
         });
+        if (overrides != null)
+            customTypeName.value = overrides.customTypeName ?? "";
+
         if (overrides != null && overrides.preset != null)
             customPreset.value = overrides.preset;
         customIconDiv.style.display = "none";
@@ -370,7 +460,7 @@ class CardContainer {
             artImg.src = images[cardObj.artImage];
         showTraits(typeSelector.value);
         showPower(typeSelector.value);
-        acc.textContent = getDescriptionForAccordion(); 
+        sublink.textContent = getDescriptionForMenu(); 
     }
     newline(cc) {
         cc.appendChild(document.createElement("br"));
@@ -408,8 +498,8 @@ function findPreset(presetString) {
     return presets.filter((i) => i.name == presetString)[0];
 }
 
-function presetChanged(presetDropdown, hideId, setNewPresetFunc) {
-        let colordiv = document.querySelector(`#${presetDropdown.id} + #${hideId}`);
+function presetChanged(presetDropdown, hideSelector, setNewPresetFunc) {
+        let colordiv = document.querySelector(`${hideSelector}`);
         let presetObj = {
             name: presetDropdown.value 
         };
@@ -421,7 +511,7 @@ function presetChanged(presetDropdown, hideId, setNewPresetFunc) {
         }
         setNewPresetFunc(presetObj);
 }
-function setPresetOptions(preset, hideId, setNewPresetFunc) {
+function setPresetOptions(preset, hideSelector, setNewPresetFunc) {
     clearChildren(preset);
     presets.forEach(p => {
         let opt = document.createElement("option");
@@ -430,7 +520,7 @@ function setPresetOptions(preset, hideId, setNewPresetFunc) {
         preset.appendChild(opt);
     });
     preset.onchange = function() {
-        presetChanged(preset, hideId, setNewPresetFunc);
+        presetChanged(preset, hideSelector, setNewPresetFunc);
         drawParentOf(preset);
     }
 }
@@ -440,7 +530,7 @@ function drawParentOf(element) {
         parentTest = parentTest.parentElement;
     }
     if (parentTest == null)
-        drawAll();
+        drawCurrent();
     else
         draw(parentTest.id);
 }
@@ -461,7 +551,73 @@ function globalIconPresetChanged(presetObj)  {
         globaliconname = presetObj.iconname;
 }
 
+function hideEverything() {
+    let children = document.getElementById("maincontent").children;
+    for(var index in children) {
+        let child = children[index];
+        if (child.id != "cardlist" && child.style != null)
+            child.style.display = "none";
+    }
+    children = document.getElementById("cardlist").children;
+    for(var index in children) {
+        let child = children[index];
+        if (child.style != null)
+            child.style.display = "none";
+    }
+}
+
+function navigateTo(newLocation) {
+    if(history.pushState) {
+        history.pushState(null, null, `#${newLocation}`);
+    }
+    else {
+        location.hash = `#${newLocation}`;
+    }
+    loadSub(newLocation);
+}
+
+function loadSub(newLocation){
+    hideEverything();
+    let target = document.getElementById(newLocation);
+    if (target != null)
+        target.style.display = "inline";
+    else {
+        newLocation = "global";
+        target = document.getElementById(newLocation);
+        if (target != null)
+            target.style.display = "inline";    
+    }
+    drawCurrent();
+}
+function loadContent(){
+    let loc = location.hash.substring(1);
+    let targetLocation = "";
+    if (loc.startsWith("card")) {
+        targetLocation = loc;
+    }
+    else {
+        if (loc == "globalimportexport")
+            targetLocation = "importexport";
+        if (loc == "globalsettings")
+            targetLocation = "global";
+    }
+    if (targetLocation == "") 
+        targetLocation = "global";
+    loadSub(targetLocation);
+  }
+  
+  
 async function setup() {
+
+    if(!location.hash) {
+        location.hash = "#globalsettings";
+    }
+      
+  loadContent();
+  
+  window.addEventListener("hashchange", loadContent)
+
+
     secondaryColorManager = new ColorManager("#secondaryparent", "Secondary Color", [200, 120, 66]);
     textBackgroundColorManager = new ColorManager("#textBackgroundparent", "Text Background Color", [20, 33, 44]);
     primaryColorManager = new ColorManager("#parent", "Primary Color", [200, 33, 0]);
@@ -480,21 +636,23 @@ async function setup() {
     presets = await res.json();
     
     globalpreset = document.getElementById('globalpreset');
-    setPresetOptions(globalpreset, "colorDiv", globalPresetChanged);
+    setPresetOptions(globalpreset, "#global #colorDiv", globalPresetChanged);
     globalPresetChanged(presets[0]);
 
     globaliconpreset = document.getElementById('globaliconpreset');
     globalCustomIconImg = document.getElementById('globalcustomiconimg');
-    setPresetOptions(globaliconpreset, "globalcustomicondiv", globalIconPresetChanged);
+    setPresetOptions(globaliconpreset, "#global #globalcustomicondiv", globalIconPresetChanged);
     hookupImageLoadFromFile("#globalcustomiconpicker", globalCustomIconImg, (iconname) => {
         globaliconname = iconname;
     });
-    
+    let globalCardBackImg = document.getElementById('globalCardBackImg');
+    hookupImageLoadFromFile("#cardBack", globalCardBackImg, () => {
+    });
     let addCard = document.getElementById('addcard');
     addCard.onclick = () => {
         let cardCount = document.querySelectorAll(".cardcontainer").length;
         new CardContainer(`card${cardCount}`, { title: "Card Title", quantity: 1, text: "Card text goes here. You can use **bold** and *italic*, along with {aember} and {damage} symbols.", flavorText: "Flavor text can be added here.", notes: "Notes will be saved in the JSON file."}, []);
-        draw(`card${cardCount}`);
+        navigateTo(`card${cardCount}`);
     }
     hookupLoadFromFile("#importJSON", true, async (result) => {
         //let blob = await fetch(result).then(r => r.blob());
@@ -516,40 +674,81 @@ async function setup() {
     let cardHeight = 1000;
     let main = document.getElementById('global');
 
+    let exportStyle = document.getElementById('exportStyle');
     let exportZip = document.getElementById('exportZip');
+    let defaultCardBack = document.getElementById('globalCardBackImg');
+    let exportCardBacks = document.getElementById('exportCardBacks');
     exportZip.onclick = async () => {
         globalMessage("Exporting zip file for printing.");
         let jsonString = rebuildJSON();
+        let rowCount = 3;
+        let colCount = 3;
+        if (exportStyle.value == "2x2png") {
+            rowCount = 2;
+            colCount = 2;
+        } else if (exportStyle.value == "1x1png") {
+            rowCount = 1;
+            colCount = 1;
+        }
         let hugeCanvas = document.createElement("canvas");
-        hugeCanvas.width = cardWidth * 3;
-        hugeCanvas.height = cardHeight * 3;
+        hugeCanvas.width = cardWidth * colCount;
+        hugeCanvas.height = cardHeight * rowCount;
         let hugeContext = hugeCanvas.getContext('2d');
+        let backCanvas = document.createElement("canvas");
+        backCanvas.width = cardWidth * colCount;
+        backCanvas.height = cardHeight * rowCount;
+        let backContext = backCanvas.getContext('2d');
         let currentRow = 0;
         let currentCol = 0;
         let imagePages = [];
         let pageSaved = false;
         let cards = Array.from(document.querySelectorAll(".cardcontainer"));
+        let fileName = "";
+        let backFileName = "";
+        let pageNumber = 1;
         globalMessage("Started Creating card pages.");
         for (var index in cards) {
             let element = cards[index];
-            let quantity = document.querySelector(`#${element.id} > #quantity`);
-            let bigcan = document.querySelector(`#${element.id} > #bigcanvas`);
+            draw(element.id);
+            let quantity = cardElement(element.id, 'quantity');
+            let customCardBack = cardElement(element.id, 'customCardBackImg');
+            let ctitle = cardElement(element.id, 'cardTitle');
+            let bigcan = cardElement(element.id, 'bigcanvas');
             for (var i = 0; i < quantity.value; i++) {
                 if (currentCol == 0 && currentRow == 0) {
                     console.log("clearing canvas");
                     hugeContext.clearRect(0,0,cardWidth * 3, cardHeight * 3);
+                    backContext.clearRect(0,0,cardWidth * 3, cardHeight * 3);
                 }
                 console.log(`drawing ${element.id} in position ${currentCol}, ${currentRow}`)
                 pageSaved = false;
+                fileName = `page${pageNumber}.png`;
+                backFileName = `page${pageNumber}(Back).png`;
+                if (rowCount == 1 && colCount == 1) {
+                    fileName = `${ctitle.value} Copy ${i + 1}.png`
+                    backFileName = `${ctitle.value} Copy ${i + 1}(Back).png`
+                }
                 hugeContext.drawImage(bigcan, cardWidth * currentCol, cardHeight * currentRow);
-                if (currentCol == 2 && currentRow == 2){
+                
+                if (exportCardBacks.checked) {
+                    let backImg = defaultCardBack;
+                    if (customCardBack.src != null && customCardBack.src.startsWith("data:image"))
+                        backImg = customCardBack;
+                    backContext.drawImage(backImg, cardWidth * (colCount - currentCol - 1) , cardHeight * currentRow);
+                }
+                if (currentCol == (colCount - 1) && currentRow == (rowCount - 1)){
                     currentCol = 0; currentRow = 0;
                     pageSaved = true;
                     console.log("saving page to zip");
                     let blob = await new Promise(resolve => hugeCanvas.toBlob(resolve));
-                    imagePages.push({ name: `page${imagePages.length + 1}.png`, lastModified: new Date(), input: blob});
+                    imagePages.push({ name: fileName, lastModified: new Date(), input: blob});
+                    if (exportCardBacks.checked) {
+                        let backblob = await new Promise(resolve => backCanvas.toBlob(resolve));
+                        imagePages.push({ name: backFileName, lastModified: new Date(), input: backblob});
+                    }
+                    pageNumber++;
                 }
-                else if (currentCol == 2) {
+                else if (currentCol == (colCount - 1)) {
                     currentCol = 0; currentRow++;
                 }
                 else {
@@ -560,9 +759,15 @@ async function setup() {
         if (pageSaved == false) {
             console.log("saving final not-full page.");
             let blob = await new Promise(resolve => hugeCanvas.toBlob(resolve));
-            imagePages.push({ name: `page${imagePages.length + 1}.png`, lastModified: new Date(), input: blob})
+            imagePages.push({ name: fileName, lastModified: new Date(), input: blob});
+            if (exportCardBacks.checked) {
+                let backblob = await new Promise(resolve => backCanvas.toBlob(resolve));
+                imagePages.push({ name: backFileName, lastModified: new Date(), input: backblob});
+            }
         }
-        let deckname = document.getElementById('deckname').value ?? "adventure";
+        let deckname = document.getElementById('deckname').value;
+        if (deckname == null || deckname == "")
+            deckname = "adventure";
         imagePages.push({ name: `${deckname}.json`, lastModified: new Date(), input: jsonString})
         globalMessage("Finished Creating card pages.");
         let zipblob = await downloadZip(imagePages).blob();
@@ -574,6 +779,7 @@ async function setup() {
         a.click();
         a.remove();
         hugeCanvas.remove();
+        backCanvas.remove();
     };
 
     aemberImage = document.getElementById('aember');
@@ -582,7 +788,7 @@ async function setup() {
     pipAemberImage = document.getElementById('1pip_aember');
     let deckname = document.getElementById('deckname');
     deckname.oninput = throttle(() => {
-        drawAll();
+        drawCurrent();
     }, 1000);
 
     let textbadgecanvas = document.querySelector(`#textbadgecanvas`);
@@ -609,15 +815,13 @@ async function setup() {
     
     cardTypes = [new CardType("Action", 715), new CardType("Artifact", 715), new CardType("Creature", 715), new CardType("Upgrade", 715)];
 
-    drawAll();
-
+    drawCurrent();
 }
 function ctxOp(callback) 
 {
-//    callback(smallcontext);
-    //if (prepareForPrint)
         callback(bigcontext);
 }
+/*
 async function drawAll() {
     globalMessage("Started redrawing all cards.");
     await new Promise((resolve, reject) => {
@@ -627,8 +831,15 @@ async function drawAll() {
         resolve();
     });
     globalMessage("Finished redrawing all cards.");
+}*/
+function drawCurrent() {
+    let loc = location.hash.substring(1);
+    if (loc.startsWith("card")) {
+        draw(loc);
+    }
 }
 function globalMessage(newmessage) {
+    console.log(newmessage);
     let globalmsg = document.querySelector(`#globalmessage`);
     globalmsg.appendChild(document.createTextNode(`${new Date(Date.now()).toLocaleString()}: ${newmessage}`));
     globalmsg.appendChild(document.createElement("br"));
@@ -642,6 +853,8 @@ function applyJSON(j) {
     globalpreset.value = obj.global.preset
     let deckname = document.querySelector(`#deckname`);
     deckname.value = obj.global.deckname ?? "";
+    let globalCardBackImg = document.getElementById('globalCardBackImg');
+    globalCardBackImg.src = obj.images[obj.global.cardBack];
     if (obj.global.preset == "Custom") {
         globaliconpreset.value = obj.global.customIconPreset; 
         if (globaliconpreset.value == "Custom") {
@@ -654,10 +867,13 @@ function applyJSON(j) {
     else {
         globalpreset.value = obj.global.preset;
     }
-    presetChanged(globalpreset, "colorDiv", globalPresetChanged);
-    presetChanged(globaliconpreset, "globalcustomicondiv", globalIconPresetChanged);
+    presetChanged(globalpreset, "#global #colorDiv", globalPresetChanged);
+    presetChanged(globaliconpreset, "#global #globalcustomicondiv", globalIconPresetChanged);
     cardlist = document.getElementById("cardlist");
     clearChildren(cardlist);
+    document.querySelectorAll("#menu > .cardSelector").forEach(element => {
+        element.remove();
+    })
     let uniqueCardCount = 0;
     let fullDeckCount = 0;
     obj.cards.forEach((card, index) => {
@@ -667,9 +883,14 @@ function applyJSON(j) {
         new CardContainer(`card${index}`, card, obj.images);
     });
     globalMessage(`Imported deck with ${uniqueCardCount} unique cards, with a deck count of ${fullDeckCount}.`)
-    drawAll();
+    drawCurrent();
 }
-
+function drawAsync(cardId) {
+    return new Promise((resolve, reject) => {
+        draw(cardId);
+        resolve();
+    });
+}
 function draw(cardId) {
     let canvasWidth = 715;
     let canvasHeight = 1000;
@@ -677,10 +898,9 @@ function draw(cardId) {
     let deckname = document.getElementById('deckname');
     
     let cc = document.querySelector(`#${cardId}`);
-    bigcanvas = document.querySelector(`#${cardId} > #bigcanvas`);
+    bigcanvas = cardElement(cardId, 'bigcanvas');
     if (bigcanvas == null)
     return;
-    smallcanvas = document.querySelector(`#${cardId} > #smallcanvas`);
     
     textbadgecanvas = document.querySelector(`#textbadgecanvas`);
     pipcanvas = document.querySelector(`#pipcanvas`);
@@ -688,20 +908,18 @@ function draw(cardId) {
     
     bigcanvas.width = 715;
     bigcanvas.height = 1000;
-    smallcanvas.width =     356;
-    smallcanvas.height =    500;
     
-    
-    let cardText = document.querySelector(`#${cardId} > #cardText`);
-    let cardTraits = document.querySelector(`#${cardId} > #cardTraits`);
-    let flavorText = document.querySelector(`#${cardId} > #flavorText`);
-    let cardTitle = document.querySelector(`#${cardId} > #cardTitle`);
-    let artImg = document.querySelector(`#${cardId} > #artImg`);
-    let aemberCount = document.querySelector(`#${cardId} > #aemberCount`);
-    let cardTypeSelector = document.querySelector(`#${cardId} > #cardType`);
-    let cardPower = document.querySelector(`#${cardId} > #cardPower`);
-    let cardArmor = document.querySelector(`#${cardId} > #cardArmor`);
-    let customCheck = document.querySelector(`#${cardId} > #customCheckbox`);
+    let cardText = cardElement(cardId, 'cardText');
+    let cardTraits = cardElement(cardId, 'cardTraits');
+    let flavorText = cardElement(cardId, 'flavorText');
+    let cardTitle = cardElement(cardId, 'cardTitle');
+    let artImg = cardElement(cardId, 'artImg');
+    let aemberCount = cardElement(cardId, 'aemberCount');
+    let cardTypeSelector = cardElement(cardId, 'cardType');
+    let cardPower = cardElement(cardId, 'cardPower');
+    let cardArmor = cardElement(cardId, 'cardArmor');
+    let customCheck = cardElement(cardId, 'customCheckbox');
+    let customTypeName = cardElement(cardId, 'customTypeName');
     
     globalMessage(`Started drawing ${cardTitle.value}`);
     let primColor = primaryColorManager.color;
@@ -709,19 +927,16 @@ function draw(cardId) {
     let textBgColor = textBackgroundColorManager.color;
 
     if (customCheck.checked) {
-        primColor = parseColor(document.querySelector(`#${cardId} > #customDiv > #colorDiv >#primarycolor`).getAttribute("customcolor"));
-        secColor = parseColor(document.querySelector(`#${cardId} > #customDiv > #colorDiv >#secondarycolor`).getAttribute("customcolor"));
-        textBgColor = parseColor(document.querySelector(`#${cardId} > #customDiv > #colorDiv >#textbgcolor`).getAttribute("customcolor"));
+        primColor = parseColor(cardElement(cardId, 'customDiv > #colorDiv >#primarycolor').getAttribute("customcolor"));
+        secColor = parseColor(cardElement(cardId, 'customDiv > #colorDiv >#secondarycolor').getAttribute("customcolor"));
+        textBgColor = parseColor(cardElement(cardId, 'customDiv > #colorDiv >#textbgcolor').getAttribute("customcolor"));
     }
     
     bigcontext = bigcanvas.getContext('2d');
-    smallcontext = smallcanvas.getContext('2d');
     let textbadgecontext = textbadgecanvas.getContext('2d');
     let pipcontext = pipcanvas.getContext('2d');
     let colorswapcontext = colorswapcanvas.getContext('2d');
     
-    smallcontext.scale(0.5,0.5);
-
     let cardType = cardTypes.filter((t) => t.typeName == cardTypeSelector.value)[0];
 
     let iconname = globaliconname;
@@ -842,8 +1057,6 @@ function draw(cardId) {
             tc[3][0], tc[3][1], cardTitleFontSize, cardTitleFont, cardType.fallbackOffset);
 
         ctx.save();
-        if (ctx == smallcanvas)
-            ctx.scale(0.5,0.5);
         ctx.font = cardTypeFont;
         ctx.fillStyle = "#f3f3f3";
         ctx.shadowOffsetX = 1;
@@ -853,7 +1066,10 @@ function draw(cardId) {
         ctx.translate(cardType.typeStartCoords[0], cardType.typeStartCoords[1]);
         ctx.rotate(cardType.typeRotation * (Math.PI / 180));
         ctx.textAlign = "center";
-        ctx.fillText(cardType.typeName.toUpperCase(), cardType.typeStartCoords[0], 0);
+        let tn = customTypeName.value;
+        if (tn == "")
+            tn = cardType.typeName.toUpperCase();
+        ctx.fillText(tn, cardType.typeStartCoords[0], 0);
         ctx.restore();
     });
 
@@ -1112,12 +1328,8 @@ window.onresize = function () {
             bigcanvas.width = 715;
             bigcanvas.height = 1000;
         }
-        if (canvas.id == "smallcanvas") {
-            smallcanvas.width = 356;
-            smallcanvas.height = 500;
-        }
     });
-    drawAll();
+    drawCurrent();
 }
 
 

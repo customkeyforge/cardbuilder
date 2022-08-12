@@ -2,13 +2,14 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Map</title>
-    <link rel="stylesheet" href="index.css">
+    <title>Keyforge Card Builder</title>
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">
+-->    <link rel="stylesheet" href="index.css">
     <script src="vanilla-picker.csp.min.js"></script>
      <link  href="vanilla-picker.csp.css" rel="stylesheet">
      <script type="text/javascript" src="cropper.js"></script>
-    <script type="module" src="load.js" crossorigin="anonymous"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/client-zip/index.js"></script>
+     <script type="module" src="https://cdn.jsdelivr.net/npm/client-zip/index.js"></script>
+     <script type="module" src="load.js" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="cardTypes.js" crossorigin="anonymous"></script>
     <script type="text/javascript" src="jsonOps.js" crossorigin="anonymous"></script>
@@ -22,29 +23,51 @@
 </head>
 <body background-color="red">
      <main>
-          <div>Import deck from a JSON file <input id="importJSON" type="file"/></div>
-          <div>Export deck to a JSON file <input id="exportJSON" type="button" value="Export..."/></div>
-          <div>Export deck for printing<input id="exportZip" type="button" value="Export For Printing..."/></div>
-          <div id="globalmessage"></div>
-          <div id="global">
-               <input id="deckname"/>
-               <select id="globalpreset"></select>
-               <div id="colorDiv" style="display: none;">
-                    <select id="globaliconpreset"></select>
-                    <div id="globalcustomicondiv" style="display: none;">
-                         <input id="globalcustomiconpicker" type="file"/>
-                         <img id="globalcustomiconimg" width="50"/>
+          <div id="pagewrapper" class="flex-container">
+               <div id="menudiv" class="flex-child">
+                    <input id="addcard" type="button" value="Add New Card"/> 
+                    <ul id="menu">
+                         <li><a href="#globalimportexport">Import/Export</a></li>
+                         <li><a href="#globalsettings">Global Settings</a></li>
+                         <li><a href="#globalrules">Rules/Readme</a></li>
+                    </ul>
+               </div>
+               <div id="maincontent" class="flex-child">
+                    <div id="importexport" style="display: none;">
+                         <div>Import deck from a JSON file <input id="importJSON" type="file"/></div>
+                         <div>Export deck to a JSON file <input id="exportJSON" type="button" value="Export..."/></div>
+                         <div>Export deck for printing<input id="exportZip" type="button" value="Export For Printing..."/>
+                              <select id="exportStyle">
+                                   <option value="3x3png">Arrange 9 cards in PNG files</option>
+                                   <option value="2x2png">Arrange 4 cards in PNG files</option>
+                                   <option value="1x1png">Individual PNG files</option>
+                                   <option value="3x3pdf">Arrange 9 cards per page in a PDF file</option>
+                                   <option value="2x2pdf">Arrange 4 cards page in a PDF file</option>
+                                   <option value="1x1pdf">Single card per page in a PDF file</option>
+                              </select>
+                              <input type="checkbox" id="exportCardBacks" name="exportCardBacks"/>
+                              <label for="exportCardBacks">Include Card Backs</label>
+                         </div>
                     </div>
-                    
-                    <span id="parent">Primary Color: #ff0</span>
-                    <span id="secondaryparent">Secondary Color: #ff0</span>
-                    <span id="textBackgroundparent">Text Background Color: #ff0</span>
+                    <div id="global"  style="display: none;">
+                         Deck Name: <input id="deckname"/><br>
+                         Card Back: <input id="cardBack" type="file"/> <img id="globalCardBackImg" height="100"/><br>
+                         Default Look: <select id="globalpreset"></select>
+                         <div id="colorDiv" style="display: none;">
+                              Choose Icon: <select id="globaliconpreset"></select>
+                              <div id="globalcustomicondiv" style="display: none;">
+                                   <input id="globalcustomiconpicker" type="file"/>
+                                   <img id="globalcustomiconimg" width="50"/>
+                              </div><br>
+                              <span id="parent">Primary Color: #ff0</span>
+                              <span id="secondaryparent">Secondary Color: #ff0</span>
+                              <span id="textBackgroundparent">Text Background Color: #ff0</span>
+                         </div>
+                    </div>
+                    <div  id="cardlist"></div>
                </div>
           </div>
-          <input id="addcard" type="button" value="Add New Card"/> 
-          <div  id="cardlist">
-               
-          </div>
+          <div id="globalmessagecontainer"><div id="globalmessage"></div></div>
      </main>
      
      <div style="display:none;">
@@ -53,60 +76,56 @@
           <canvas origin-clean="true" style="display:none;" width="400" height="400" id="textbadgecanvas"></canvas>
 
         <img id="aember"
-             src="aember.png" crossorigin="anonymous"/>
+             src="images/aember.png" crossorigin="anonymous"/>
         <img id="damage"
-             src="damage.png" crossorigin="anonymous"/>
+             src="images/damage.png" crossorigin="anonymous"/>
         <img id="frame"
-             src="frame.png" crossorigin="anonymous"/>
-             <img id="action_primary_solid" src="action_primary_solid.png" crossorigin="anonymous"/>
-             <img id="action_primary_alpha" src="action_primary_alpha.png" crossorigin="anonymous"/>
-             <img id="1pip_solid" src="1pip_solid.png" crossorigin="anonymous"/>
-             <img id="1pip_aember" src="1pip_aember.png" crossorigin="anonymous"/>
+             src="images/frame.png" crossorigin="anonymous"/>
+             <img id="action_primary_solid" src="images/action_primary_solid.png" crossorigin="anonymous"/>
+             <img id="action_primary_alpha" src="images/action_primary_alpha.png" crossorigin="anonymous"/>
+             <img id="1pip_solid" src="images/1pip_solid.png" crossorigin="anonymous"/>
+             <img id="1pip_aember" src="images/1pip_aember.png" crossorigin="anonymous"/>
 
-             <img id="action_secondary_solid" src="action_secondary_solid.png" crossorigin="anonymous"/>
-             <img id="action_secondary_alpha" src="action_secondary_alpha.png" crossorigin="anonymous"/>
-             <img id="upgrade_secondary_solid" src="upgrade_secondary_solid.png" crossorigin="anonymous"/>
-             <img id="upgrade_secondary_alpha" src="upgrade_secondary_alpha.png" crossorigin="anonymous"/>
-             <img id="upgrade_text_background_solid" src="upgrade_text_background_solid.png" crossorigin="anonymous"/>
-             <img id="upgrade_text_background_alpha" src="upgrade_text_background_alpha.png" crossorigin="anonymous"/>
+             <img id="action_text_background_solid" src="images/action_text_background_solid.png" crossorigin="anonymous"/>
+             <img id="action_text_background_alpha" src="images/action_text_background_alpha.png" crossorigin="anonymous"/>
+             <img id="action_secondary_solid" src="images/action_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="action_secondary_alpha" src="images/action_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="upgrade_secondary_solid" src="images/upgrade_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="upgrade_secondary_alpha" src="images/upgrade_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="upgrade_text_background_solid" src="images/upgrade_text_background_solid.png" crossorigin="anonymous"/>
+             <img id="upgrade_text_background_alpha" src="images/upgrade_text_background_alpha.png" crossorigin="anonymous"/>
              
-             <img id="artifact_secondary_solid" src="artifact_secondary_solid.png" crossorigin="anonymous"/>
-             <img id="artifact_secondary_alpha" src="artifact_secondary_alpha.png" crossorigin="anonymous"/>
-             <img id="artifact_secondary2_solid" src="artifact_secondary2_solid.png" crossorigin="anonymous"/>
-             <img id="artifact_secondary2_alpha" src="artifact_secondary2_alpha.png" crossorigin="anonymous"/>
-             <img id="artifact_text_background_solid" src="artifact_text_background_solid.png" crossorigin="anonymous"/>
-             <img id="artifact_text_background_alpha" src="artifact_text_background_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary_solid" src="images/artifact_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary_alpha" src="images/artifact_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary2_solid" src="images/artifact_secondary2_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_secondary2_alpha" src="images/artifact_secondary2_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_text_background_solid" src="images/artifact_text_background_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_text_background_alpha" src="images/artifact_text_background_alpha.png" crossorigin="anonymous"/>
              
-             <img id="artifact_upgrade_primary_solid" src="artifact_upgrade_primary_solid.png" crossorigin="anonymous"/>
-             <img id="artifact_upgrade_primary_alpha" src="artifact_upgrade_primary_alpha.png" crossorigin="anonymous"/>
-             <img id="artifact_upgrade_banner_solid" src="artifact_upgrade_banner_solid2.png" crossorigin="anonymous"/>
-             <img id="artifact_upgrade_banner_alpha" src="artifact_upgrade_banner_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_primary_solid" src="images/artifact_upgrade_primary_solid.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_primary_alpha" src="images/artifact_upgrade_primary_alpha.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_banner_solid" src="images/artifact_upgrade_banner_solid2.png" crossorigin="anonymous"/>
+             <img id="artifact_upgrade_banner_alpha" src="images/artifact_upgrade_banner_alpha.png" crossorigin="anonymous"/>
 
              
-             <img id="creature_secondary_solid" src="creature_secondary_solid.png" crossorigin="anonymous"/>
-             <img id="creature_secondary_alpha" src="creature_secondary_alpha.png" crossorigin="anonymous"/>
-             <img id="creature_primary_solid" src="creature_primary_solid.png" crossorigin="anonymous"/>
-             <img id="creature_primary_alpha" src="creature_primary_alpha.png" crossorigin="anonymous"/>
-             <img id="power_defense" src="power_defense.png" crossorigin="anonymous"/>
-             <img id="action_swoop"
-             src="action_swoop.png" crossorigin="anonymous"/>
-             <img src="brobnar_faction_icon.png" crossorigin="anonymous"/>
-             <img src="dis_faction_icon.png" crossorigin="anonymous"/>
-             <img src="logos_faction_icon.png" crossorigin="anonymous"/>
-             <img src="mars_faction_icon.png" crossorigin="anonymous"/>
-             <img src="sanctum_faction_icon.png" crossorigin="anonymous"/>
-             <img src="saurian_faction_icon.png" crossorigin="anonymous"/>
-             <img src="shadows_faction_icon.png" crossorigin="anonymous"/>
-             <img src="star_alliance_faction_icon.png" crossorigin="anonymous"/>
-             <img src="untamed_faction_icon.png" crossorigin="anonymous"/>
-             <img src="unfathomable_faction_icon.png" crossorigin="anonymous"/>
+             <img id="creature_secondary_solid" src="images/creature_secondary_solid.png" crossorigin="anonymous"/>
+             <img id="creature_secondary_alpha" src="images/creature_secondary_alpha.png" crossorigin="anonymous"/>
+             <img id="creature_primary_solid" src="images/creature_primary_solid.png" crossorigin="anonymous"/>
+             <img id="creature_primary_alpha" src="images/creature_primary_alpha.png" crossorigin="anonymous"/>
+             <img id="power_defense" src="images/power_defense.png" crossorigin="anonymous"/>
+             <img id="action_swoop" src="images/action_swoop.png" crossorigin="anonymous"/>
+             <img src="images/brobnar_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/dis_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/logos_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/mars_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/sanctum_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/saurian_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/shadows_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/star_alliance_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/untamed_faction_icon.png" crossorigin="anonymous"/>
+             <img src="images/unfathomable_faction_icon.png" crossorigin="anonymous"/>
 
-        <img id="action_secondary"
-             src="action_secondary.png" crossorigin="anonymous"/>
-        <img id="action_text_background_solid"
-                  src="action_text_background_solid.png" crossorigin="anonymous"/>
-        <img id="action_text_background_alpha"
-                  src="action_text_background_alpha.png" crossorigin="anonymous"/>
+       
       </div>
       
 </body>

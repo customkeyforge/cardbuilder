@@ -263,9 +263,16 @@
 	function addEventListeners() {
 		// add mouse listeners to the canvas
 		canvas.onmousedown = function(event) {
+			var bounds = event.target.getBoundingClientRect();
+			let x = event.pageX - bounds.left - scrollX;  // is window.scrollX same for Y
+			let y = event.pageY - bounds.top - scrollY;   // 
 			// depending on where the mouse has clicked, choose which type of event to fire
-			var coords = canvas.getMouseCoords(event);
-			initialCropOrMoveEvent(getClickPos(coords));
+			//var coords = canvas.getMouseCoords(event);
+			//initialCropOrMoveEvent(getClickPos(coords));
+			x *= canvas.width / parseInt(canvas.style.width);
+			y *= canvas.width / parseInt(canvas.style.width);
+			console.log(`${x}, ${y}`)
+			initialCropOrMoveEvent({x,y});
 			if (onChangeCb != null) onChangeCb();
 		};
 
@@ -282,9 +289,15 @@
 		};
 
 		canvas.onmousemove = function(event) {
-			var coords = canvas.getMouseCoords(event);
+			var bounds = event.target.getBoundingClientRect();
+			let x = event.pageX - bounds.left - scrollX;  // is window.scrollX same for Y
+			let y = event.pageY - bounds.top - scrollY;   // 
+//			var coords = canvas.getMouseCoords(event);
 
-			startCropOrMoveEvent(getClickPos(coords));
+			//startCropOrMoveEvent(getClickPos(coords));
+			x *= canvas.width / parseInt(canvas.style.width);
+			y *= canvas.width / parseInt(canvas.style.width);
+			startCropOrMoveEvent({x,y});
 			if (onChangeCb != null) onChangeCb();
 		};
 
