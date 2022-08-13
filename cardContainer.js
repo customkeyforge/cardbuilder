@@ -1,7 +1,7 @@
 export const name = "cardContainer";
-import { hookupImageLoadFromFile, hookupLoadFromFile, throttle, parseColor, addImage, isImageData } from "./utils.js";
+import { hookupImageLoadFromFile, hookupLoadFromFile, throttle, parseColor, addImage, isImageData, getCrcHashForString } from "./utils.js";
 import { ColorManager } from "./colorManager.js";
-import { drawAsync, draw, artCropRatio } from "./cardDrawer.js";
+import { drawAsync, artCropRatio } from "./cardDrawer.js";
 import { setPresetOptions } from "./presetDropdown.js";
 
 export class CardContainer {
@@ -245,6 +245,7 @@ export class CardContainer {
 
         hookupImageLoadFromFile(`#${cardId} #customIconFilePicker`, customIconImg, (iconname) => {
             toplevel.setAttribute("customIcon", iconname);
+            
         });
         
         hookupImageLoadFromFile(`#${cardId} #customCardBackFilePicker`, customCardBackImg, () => {
@@ -257,6 +258,8 @@ export class CardContainer {
             cropper.start(artcan, artCropRatio); 
             cropper.registerCallback(throttle(() => {
                 artImg.src = cropper.getCroppedImageSrc();
+                artImg.setAttribute("imgsrchash", getCrcHashForString(artImg.src));
+                
             }, 200));
             cropper.showImage(artSourceImg.src);
             cropper.startCropping();
@@ -289,6 +292,7 @@ export class CardContainer {
             if (overrides.customIconData != null)
             {
                 customIconImg.src = images[overrides.customIconData];
+                customIconImg.setAttribute("imgsrchash", getCrcHashForString(customIconImg.src));
                 toplevel.setAttribute("customIcon", customIconImg.src.substring(customIconImg.src.length - 15));
             }
         }
@@ -302,8 +306,10 @@ export class CardContainer {
             textbgcolor = parseColor(selectedPreset.textBackgroundColor);
             toplevel.setAttribute("customIcon", selectedPreset.iconname);
         }
-        if (overrides != null && overrides.customCardBack != null && overrides.customCardBack != "")
+        if (overrides != null && overrides.customCardBack != null && overrides.customCardBack != "") {
             customCardBackImg.src = images[overrides.customCardBack];
+            customCardBackImg.setAttribute("imgsrchash", getCrcHashForString(customCardBackImg.src));
+        }
 
         let cardSecColorMan = new ColorManager(`#${cardId} #secondarycolor`, "Secondary Color", seccolor);
         let cardTextBgColorMan = new ColorManager(`#${cardId} #textbgcolor`, "Text Background Color", textbgcolor);
@@ -335,8 +341,10 @@ export class CardContainer {
             if (overrides.customIconPreset == "Custom")
                 customIconDiv.style.display = "inline";
         }
-        if (cardObj.artImage != null)
+        if (cardObj.artImage != null) {
             artImg.src = images[cardObj.artImage];
+            artImg.setAttribute("imgsrchash", getCrcHashForString(artImg.src));
+        }
         showTraits(typeSelector.value);
         showPower(typeSelector.value);
         sublink.textContent = getDescriptionForMenu(); 

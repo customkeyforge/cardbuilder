@@ -1,9 +1,8 @@
 export const name = "cardDrawer";
 import { GlobalContext } from "./globalContext.js";
-import { cardElement, globalMessage, parseColor } from "./utils.js";
+import { findImageInDomByHash, cardElement, getCrcHashForString, globalMessage, parseColor } from "./utils.js";
 import { fixBannerColor, fixPrimaryColor, drawArtImg, fixSecondary2Color, fixSecondary3Color, fixTextBackgroundColor, fixSecondaryColor, fixTextBackgroundStamp } from "./cardTypes.js";
 import { serializeCardFromDom } from "./cardContainer.js";
-
 
 var aemberImage = null;
 var damageImage = null;
@@ -78,10 +77,6 @@ function convertDataURL(dataURL) {
     var img = new Image();
     img.src = dataURL;
     return img;
-}
-function findImageInDom(imageName) {
-    let allImages = Array.from(document.querySelectorAll("img"));
-    return allImages.filter((img) => img.src.endsWith(imageName))[0];
 }
 
 export function draw(cardId) {
@@ -170,16 +165,17 @@ export function draw(cardId) {
     let iconImage = null;
 
     if (isCustom && customIconData != null) {
-        iconImage = convertDataURL(customIconData);
+        let customDataHash = getCrcHashForString(customIconData);
+        iconImage = findImageInDomByHash(customDataHash);
     }
     else if (isCustom && overrideIconPreset == null) {
-        iconImage = findImageInDom(overridePreset.iconname)
+        iconImage = findImageInDomByHash(overridePreset.iconhash)
     }
     else if (isCustom && overrideIconPreset != null) {
-        iconImage = findImageInDom(overrideIconPreset.iconname)
+        iconImage = findImageInDomByHash(overrideIconPreset.iconhash)
     }
     else {
-        iconImage = findImageInDom(globalContext.globalIconName)
+        iconImage = findImageInDomByHash(globalContext.globalIconHash)
     }
 
     textbadgecontext.clearRect(0,0,400,400);

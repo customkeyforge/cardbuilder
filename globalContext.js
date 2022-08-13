@@ -1,5 +1,6 @@
 export const name = "globalContext";
 import { CardType } from "./cardTypes.js"
+import { findImageInDomByName, getCrcHashForString } from "./utils.js";
 export class GlobalContext {
     cardTypes = [];
     presets = [];
@@ -8,6 +9,7 @@ export class GlobalContext {
     secondaryColor = [200, 120, 66];
     textBackgroundColor = [20, 33, 44];
     globalIconName = "";
+    globalIconHash = "";
     globalPreset = {};
     static instance;
     constructor() {
@@ -29,6 +31,13 @@ export class GlobalContext {
             
             const res = await fetch(myRequest, myInit);
             this.presets = await res.json();
+            for (var p of this.presets) {
+                if (p.iconname != null) {
+                    let iconImg = findImageInDomByName(p.iconname);
+                    if (iconImg != null)
+                        p.iconhash = getCrcHashForString(iconImg.src);
+                }
+            }
             this.globalPreset = this.presets[0];
             
             this.cardTypes = [new CardType("Action", 715), new CardType("Artifact", 715), new CardType("Creature", 715), new CardType("Upgrade", 715)];

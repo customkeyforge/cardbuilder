@@ -44,7 +44,9 @@ export function hookupImageLoadFromFile(filePickerSelector, targetImageElement, 
       };
       hookupLoadFromFile(filePickerSelector, false, (result) => {
         targetImageElement.src = event.target.result;
-        iconnameSetCallback(targetImageElement.src.substring(targetImageElement.src.length - 15));
+        let srcHash = getCrcHashForString(targetImageElement.src);
+        targetImageElement.setAttribute("imgsrchash", srcHash);
+        iconnameSetCallback(targetImageElement.src.substring(targetImageElement.src.length - 15),srcHash );
         drawCurrent();
       });
 }
@@ -83,6 +85,16 @@ export function isImageData(imgsrc) {
     return imgsrc != null && imgsrc.startsWith("data:image");
 }
 
+export function findImageInDomByName(imageName) {
+    let allImages = Array.from(document.querySelectorAll("img"));
+    return allImages.filter((img) => img.src.endsWith(imageName))[0];
+}
+
+export function findImageInDomByHash(imageHash) {
+    let allImages = Array.from(document.querySelectorAll("img"));
+    return allImages.filter((img) => img.getAttribute("imgsrchash") == `${imageHash}`)[0];
+}
+
 export function addImage(imageList, image) {
     imageList.push(image);
     return imageList.length - 1;
@@ -91,10 +103,18 @@ export function getrgbString(color) {
     return `${color[0].toString(16).padStart(2, '0')}${color[1].toString(16).padStart(2, '0')}${color[2].toString(16).padStart(2, '0')}`;
 };
 
+export function getCrcHashForString(instr) {
+    return CRC32.str(instr);
+};
+export function getCrcHashForObject(inobj) {
+    return CRC32.str(JSON.stringify(inobj));
+};
+
 export function globalMessage(newmessage) {
-    console.log(newmessage);
+    let mesg = `${new Date(Date.now()).toISOString()}: ${newmessage}`;
+    console.log(mesg);
     let globalmsg = document.querySelector(`#globalmessage`);
-    globalmsg.appendChild(document.createTextNode(`${new Date(Date.now()).toLocaleString()}: ${newmessage}`));
+    globalmsg.appendChild(document.createTextNode(mesg));
     globalmsg.appendChild(document.createElement("br"));
 }
 

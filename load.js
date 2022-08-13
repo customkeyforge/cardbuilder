@@ -5,7 +5,7 @@ var textBackgroundColorManager = {};
 var globalpreset = {};
 var globalContext = {};
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
-import { cardElement, hookupImageLoadFromFile, hookupLoadFromFile, throttle, globalMessage, parseColor, clearChildren } from "./utils.js"
+import { cardElement, hookupImageLoadFromFile, hookupLoadFromFile, throttle, globalMessage, parseColor, clearChildren, getCrcHashForString } from "./utils.js"
 import { CardContainer } from "./cardContainer.js"
 import { ColorManager } from "./colorManager.js"
 import { draw, warmUpFonts, drawCurrent } from "./cardDrawer.js"
@@ -23,15 +23,20 @@ function globalPresetChanged(presetObj)  {
     }
     if (presetObj.iconname != null) 
         globalContext.globalIconName = presetObj.iconname;
+    if (presetObj.iconhash != null)
+        globalContext.globalIconHash = presetObj.iconhash;
+
 }
 
 function globalIconPresetChanged(presetObj)  {
     if (globalpreset.value == "Custom" && presetObj.name == "Custom") {
         let globalCustomIconImg = document.getElementById('globalcustomiconimg');
-        globalContext.globalIconName = globalCustomIconImg.src.substring(globalCustomIconImg.src.length - 15);
+        globalContext.globalIconHash = getCrcHashForString(globalCustomIconImg.src);
     }
-    else if (globalpreset.value == "Custom")
+    else if (globalpreset.value == "Custom") {
         globalContext.globalIconName = presetObj.iconname;
+        globalContext.globalIconHash = presetObj.iconhash;
+    }
 }
 
 function hideEverything() {
@@ -114,8 +119,9 @@ async function setup() {
     let globaliconpreset = document.getElementById('globaliconpreset');
     let globalCustomIconImg = document.getElementById('globalcustomiconimg');
     setPresetOptions(globaliconpreset, "#global #globalcustomicondiv", globalIconPresetChanged);
-    hookupImageLoadFromFile("#globalcustomiconpicker", globalCustomIconImg, (iconname) => {
+    hookupImageLoadFromFile("#globalcustomiconpicker", globalCustomIconImg, (iconname, iconhash) => {
         globalContext.globalIconName = iconname;
+        globalContext.globalIconHash = iconhash;
     });
     let globalCardBackImg = document.getElementById('globalCardBackImg');
     hookupImageLoadFromFile("#cardBack", globalCardBackImg, () => {
@@ -344,6 +350,10 @@ async function setup() {
     warmUpFonts(textbadgecanvas);
 
     
+    for (var img of document.querySelectorAll("img")) {
+        let hash = getCrcHashForString(img.src);
+        img.setAttribute("imgsrchash", `${hash}`);
+    }
     
     drawCurrent();
 }
@@ -371,10 +381,12 @@ function applyJSON(j) {
     let globaliconpreset = document.getElementById('globaliconpreset');
     let globalCustomIconImg = document.getElementById('globalcustomiconimg');
     globalCardBackImg.src = obj.images[obj.global.cardBack];
+    globalCardBackImg.setAttribute("imgsrchash", getCrcHashForString(globalCardBackImg.src));
     if (obj.global.preset == "Custom") {
         globaliconpreset.value = obj.global.customIconPreset; 
         if (globaliconpreset.value == "Custom") {
             globalCustomIconImg.src = obj.images[obj.global.customIconData]; 
+            globalCustomIconImg.setAttribute("imgsrchash", getCrcHashForString(globalCustomIconImg.src));
         }
         primaryColorManager.setColor(parseColor(obj.global.primaryColor));
         secondaryColorManager.setColor(parseColor(obj.global.secondaryColor));
