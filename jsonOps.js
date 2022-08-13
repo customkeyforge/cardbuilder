@@ -1,10 +1,11 @@
+export const name = "jsonOps";
+import { GlobalContext } from "./globalContext.js";
+import { getrgbString } from "./utils.js";
 
 
-
-
-function rebuildJSON(e) {
+export function rebuildJSON(e) {
     console.log("rebuilding json");
-    returnObj = {};
+    let returnObj = {};
     returnObj.global = {};
     let deckname = document.querySelector(`#deckname`);
     returnObj.global.explanation = "This JSON file represents a custom Keyforge adventure. To get a printable (therefore playable) version, upload it to FILL IN URL HERE."
@@ -12,7 +13,8 @@ function rebuildJSON(e) {
     returnObj.global.preset = globalpreset.value;
     returnObj.cards = [];
     returnObj.images = [];
-    addImage = (image) => {
+    let globalContext = new GlobalContext();
+    let addImage = (image) => {
         returnObj.images.push(image);
         return returnObj.images.length - 1;
     };
@@ -20,30 +22,32 @@ function rebuildJSON(e) {
     if (isImageData(globalCardBackImg.src))
         returnObj.global.cardBack = addImage(globalCardBackImg.src);
     if (globalpreset.value == "Custom") {
+        let globaliconpreset = document.getElementById('globaliconpreset');
+        let globalCustomIconImg = document.getElementById('globalcustomiconimg');
         returnObj.global.customIconPreset = globaliconpreset.value; 
         if (globaliconpreset.value == "Custom") {
             returnObj.global.customIconData = addImage(globalCustomIconImg.src); 
         }
-        returnObj.global.primaryColor = primaryColorManager.getrgbString(primaryColorManager.color);
-        returnObj.global.secondaryColor = secondaryColorManager.getrgbString(secondaryColorManager.color);
-        returnObj.global.textBackgroundColor = textBackgroundColorManager.getrgbString(textBackgroundColorManager.color);
+        returnObj.global.primaryColor = getrgbString(globalContext.primaryColor);
+        returnObj.global.secondaryColor = getrgbString(globalContext.secondaryColor);
+        returnObj.global.textBackgroundColor = getrgbString(globalContext.textBackgroundColor);
     }
-    i = 0;
+    let i = 0;
     function isImageData(imgsrc) {
         return imgsrc != null && imgsrc.startsWith("data:image");
     }
     document.querySelectorAll(".cardcontainer").forEach(element => {
         //console.log(`rebuilding card ${i}`);
-        cardObj = {};
-        cardText = document.querySelector(`#${element.id} #cardText`);
+        let cardObj = {};
+        let cardText = document.querySelector(`#${element.id} #cardText`);
         cardObj.text = cardText.value;
         let cardTraits = document.querySelector(`#${element.id} #cardTraits`);
         cardObj.traits = cardTraits.value;
         let cardType = document.querySelector(`#${element.id} #cardType`);
         cardObj.cardType = cardType.value ?? "Action";
-        cardTitle = document.querySelector(`#${element.id}  #cardTitle`);
+        let cardTitle = document.querySelector(`#${element.id}  #cardTitle`);
         cardObj.title = cardTitle.value;
-        cardQuantity = document.querySelector(`#${element.id}  #quantity`);
+        let cardQuantity = document.querySelector(`#${element.id}  #quantity`);
         cardObj.quantity = cardQuantity.value;
         let cardPower = document.querySelector(`#${element.id}  #cardPower`);
         cardObj.power = cardPower.value;
@@ -59,7 +63,7 @@ function rebuildJSON(e) {
         if (isImageData(artImg.src))
             cardObj.artImage = addImage(artImg.src);
         cardObj.notes = document.querySelector(`#${element.id}  #cardNotes`).value ?? "";
-        customDiv = document.querySelector(`#${element.id}  #customDiv`);
+        let customDiv = document.querySelector(`#${element.id}  #customDiv`);
         if (customDiv.style.display != "none") {
             let customPreset = document.querySelector(`#${element.id}  #customDiv .presetSelector`);
             cardObj.overrides = {
@@ -90,7 +94,7 @@ function rebuildJSON(e) {
         }
         returnObj.cards.push(cardObj);
     });
-    jsonstring = JSON.stringify(returnObj, null, 2);
+    let jsonstring = JSON.stringify(returnObj, null, 2);
     //console.log(`rebuilt JSON as ${jsonstring}`);
     return jsonstring;
 }

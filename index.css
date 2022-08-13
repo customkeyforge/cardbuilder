@@ -135,7 +135,6 @@ textarea {
     text-align: left;
     border: none;
     outline: none;
-    transition: 0.4s;
   }
 
   /* Style the accordion panel. Note: hidden by default */

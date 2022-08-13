@@ -1,11 +1,13 @@
-var drawArtImg = {};
-var fixPrimaryColor = {};
-var fixBannerColor = {};
-var fixSecondaryColor = {};
-var fixSecondary2Color = {};
-var fixSecondary3Color = {};
-var fixTextBackgroundColor = {};
-var fixTextBackgroundStamp = {};
+export const name = "cardTypes";
+
+export const drawArtImg = {};
+export const fixPrimaryColor = {};
+export const fixBannerColor = {};
+export const fixSecondaryColor = {};
+export const fixSecondary2Color = {};
+export const fixSecondary3Color = {};
+export const fixTextBackgroundColor = {};
+export const fixTextBackgroundStamp = {};
 
 
 function distance(p1, p2) {
@@ -21,8 +23,7 @@ function findAngle(A,B,C) {
    var AC = Math.sqrt(Math.pow(C.x-A.x,2)+ Math.pow(C.y-A.y,2));
    return Math.acos((BC*BC+AB*AB-AC*AC)/(2*BC*AB));
 }
-
-class CardType {
+export class CardType {
     typeName = "";
     drawSteps = [];
     titleCurve = [];
