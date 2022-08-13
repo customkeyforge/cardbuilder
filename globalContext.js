@@ -35,7 +35,8 @@ export class GlobalContext {
         }
         
         this.findPreset = (presetString) => {
-            return this.presets.filter((i) => i.name == presetString)[0];
+            //clone the object, since we want to make sure no one else is modifying the presets.
+            return JSON.parse(JSON.stringify(this.presets.filter((i) => i.name == presetString)[0]));
         }
         this.setPrimaryColor = (newColor) => {
             this.primaryColor = newColor;

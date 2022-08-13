@@ -2,6 +2,7 @@ export const name = "cardDrawer";
 import { GlobalContext } from "./globalContext.js";
 import { cardElement, globalMessage, parseColor } from "./utils.js";
 import { fixBannerColor, fixPrimaryColor, drawArtImg, fixSecondary2Color, fixSecondary3Color, fixTextBackgroundColor, fixSecondaryColor, fixTextBackgroundStamp } from "./cardTypes.js";
+import { serializeCardFromDom } from "./cardContainer.js";
 
 
 var aemberImage = null;
@@ -72,6 +73,17 @@ export function drawCurrent() {
         draw(loc);
     }
 }
+
+function convertDataURL(dataURL) {
+    var img = new Image();
+    img.src = dataURL;
+    return img;
+}
+function findImageInDom(imageName) {
+    let allImages = Array.from(document.querySelectorAll("img"));
+    return allImages.filter((img) => img.src.endsWith(imageName))[0];
+}
+
 export function draw(cardId) {
     let canvasWidth = 715;
     let canvasHeight = 1000;
@@ -80,13 +92,21 @@ export function draw(cardId) {
     damageImage = document.getElementById('damage');
     pipSolidImage = document.getElementById('1pip_solid');
     pipAemberImage = document.getElementById('1pip_aember');
-
-    let deckname = document.getElementById('deckname');
     
+    let decknameObj = document.getElementById('deckname');
+    let deckname = decknameObj.value;
+    let images = [];
+    
+    let cardContainerObj = document.getElementById(cardId);
+    if (cardContainerObj == null)
+        return;
+    globalMessage(`Started drawing ${cardId}`);
+    let cardObj = serializeCardFromDom(cardId, images);
+
     let cc = document.querySelector(`#${cardId}`);
     bigcanvas = cardElement(cardId, 'bigcanvas');
     if (bigcanvas == null)
-    return;
+        return;
     
     textbadgecanvas = document.querySelector(`#textbadgecanvas`);
     pipcanvas = document.querySelector(`#pipcanvas`);
@@ -95,28 +115,49 @@ export function draw(cardId) {
     bigcanvas.width = 715;
     bigcanvas.height = 1000;
     
-    let cardText = cardElement(cardId, 'cardText');
-    let cardTraits = cardElement(cardId, 'cardTraits');
-    let flavorText = cardElement(cardId, 'flavorText');
-    let cardTitle = cardElement(cardId, 'cardTitle');
-    let artImg = cardElement(cardId, 'artImg');
-    let aemberCount = cardElement(cardId, 'aemberCount');
-    let cardTypeSelector = cardElement(cardId, 'cardType');
-    let cardPower = cardElement(cardId, 'cardPower');
-    let cardArmor = cardElement(cardId, 'cardArmor');
-    let customCheck = cardElement(cardId, 'customCheckbox');
-    let customTypeName = cardElement(cardId, 'customTypeName');
-    
-    globalMessage(`Started drawing ${cardTitle.value}`);
     let globalContext = new GlobalContext();
+    let cardText = cardObj.text;
+    let cardTraits = cardObj.traits;
+    let flavorText = cardObj.flavorText;
+    let cardTitle = cardObj.title;
+    let artImg = null;
+    if (cardObj.artImage != null)
+        artImg = images[cardObj.artImage];
+    let aemberCount = cardObj.aemberCount;
+    let cardTypeFromObj = cardObj.cardType;
+    let cardPower = cardObj.power;
+    let cardArmor = cardObj.armor;
+    let isCustom = cardObj.overrides != null;
+    let overrides = cardObj.overrides;
+    let customTypeName =  "";
+    let customIconName =  "";
+    let overridePreset = null;
+    let overrideIconPreset = null;
+    let customIconData = null;
+    if (isCustom) {
+        overridePreset = globalContext.findPreset(overrides.preset);
+        if (overridePreset.name == "Custom") {
+            overridePreset.primaryColor = overrides.primaryColor;
+            overridePreset.secondaryColor = overrides.secondaryColor;
+            overridePreset.textBackgroundColor = overrides.textBackgroundColor;
+            if (overrides.customIconPreset != null) {
+                overrideIconPreset = globalContext.findPreset(overrides.customIconPreset);
+                if (overrideIconPreset.name == "Custom") {
+                    customIconData = images[overrides.customIconData];
+                }
+            }
+        }
+        customTypeName =  overrides.customTypeName ?? "";
+    }
+    
     let primColor = globalContext.primaryColor;
     let secColor = globalContext.secondaryColor;
     let textBgColor = globalContext.textBackgroundColor;
 
-    if (customCheck.checked) {
-        primColor = parseColor(cardElement(cardId, 'primarycolor').getAttribute("customcolor"));
-        secColor = parseColor(cardElement(cardId, 'secondarycolor').getAttribute("customcolor"));
-        textBgColor = parseColor(cardElement(cardId, 'textbgcolor').getAttribute("customcolor"));
+    if (isCustom) {
+        primColor = parseColor(overridePreset.primaryColor);
+        secColor = parseColor(overridePreset.secondaryColor);
+        textBgColor = parseColor(overridePreset.textBackgroundColor);
     }
     
     bigcontext = bigcanvas.getContext('2d');
@@ -124,15 +165,23 @@ export function draw(cardId) {
     let pipcontext = pipcanvas.getContext('2d');
     let colorswapcontext = colorswapcanvas.getContext('2d');
     
-    let cardType = globalContext.cardTypes.filter((t) => t.typeName == cardTypeSelector.value)[0];
+    let cardType = globalContext.cardTypes.filter((t) => t.typeName == cardTypeFromObj)[0];
 
-    let iconname = globalContext.globalIconName;
-    if (customCheck.checked && cc.hasAttribute("customIcon")) {
-        iconname = cc.getAttribute("customIcon");
-        //console.log(`searching for icon with name ${iconname}`);
+    let iconImage = null;
+
+    if (isCustom && customIconData != null) {
+        iconImage = convertDataURL(customIconData);
     }
-    let allImages = Array.from(document.querySelectorAll("img"));
-    let iconImage = allImages.filter((img) => img.src.endsWith(iconname))[0];
+    else if (isCustom && overrideIconPreset == null) {
+        iconImage = findImageInDom(overridePreset.iconname)
+    }
+    else if (isCustom && overrideIconPreset != null) {
+        iconImage = findImageInDom(overrideIconPreset.iconname)
+    }
+    else {
+        iconImage = findImageInDom(globalContext.globalIconName)
+    }
+
     textbadgecontext.clearRect(0,0,400,400);
     if (iconImage != null) {
         //console.log(`icon found ${iconImage.src}`);
@@ -143,9 +192,8 @@ export function draw(cardId) {
         textbadgecontext.putImageData(greybadge, 0,0);
     }
 
-    let traitText = cardTraits.value.replaceAll('*', '•').toUpperCase();
+    let traitText = cardTraits.replaceAll('*', '•').toUpperCase();
     if (cardText == null) return;
-    let fulltext = cardText.value;
     ctxOp((ctx) => ctx.clearRect(0, 0, 5000, 5000));
 
 
@@ -168,8 +216,8 @@ export function draw(cardId) {
                 let endx = canvasWidth - startx;
                 let artWidth = endx - startx;
                 let artHeight = artWidth * artCropRatio;
-                if (artImg != null && artImg.src != null)
-                    ctx.drawImage(artImg, startx,starty,artWidth, artHeight);
+                if (artImg != null)
+                    ctx.drawImage(convertDataURL(artImg), startx,starty,artWidth, artHeight);
             }
             else if (image == fixPrimaryColor) 
             {
@@ -217,7 +265,7 @@ export function draw(cardId) {
     if (iconImage != null)
         ctxOp((ctx) => {ctx.drawImage(iconImage, 32, 20, 140, 140)});
     
-    if (aemberCount.value != undefined && aemberCount.value > 0) {
+    if (aemberCount != undefined && aemberCount > 0) {
         pipcontext.clearRect(0,0,1000, 1000);
     
         pipcontext.drawImage(pipSolidImage, 0, 0);
@@ -225,7 +273,7 @@ export function draw(cardId) {
         pipcontext.drawImage(pipAemberImage, 0, 0);
         var pipybaseline = 145;
         var pipHeight = 100;
-        for (var j = 0; j< aemberCount.value; j++)
+        for (var j = 0; j< aemberCount; j++)
             ctxOp((ctx) => {ctx.drawImage(pipcanvas, 28, pipybaseline + (j * pipHeight), pipHeight, pipHeight  )});
     }
 
@@ -237,7 +285,7 @@ export function draw(cardId) {
         drawCircle(ctx, tc[1][0], tc[1][1]);
         drawCircle(ctx, tc[2][0], tc[2][1]);
         drawCircle(ctx, tc[3][0], tc[3][1]);*/
-        textOnCurve(ctx, cardTitle.value, 
+        textOnCurve(ctx, cardTitle, 
             tc[0][0], tc[0][1],
             tc[1][0], tc[1][1],
             tc[2][0], tc[2][1],
@@ -253,7 +301,7 @@ export function draw(cardId) {
         ctx.translate(cardType.typeStartCoords[0], cardType.typeStartCoords[1]);
         ctx.rotate(cardType.typeRotation * (Math.PI / 180));
         ctx.textAlign = "center";
-        let tn = customTypeName.value;
+        let tn = customTypeName;
         if (tn == "")
             tn = cardType.typeName.toUpperCase();
         ctx.fillText(tn, cardType.typeStartCoords[0], 0);
@@ -270,17 +318,17 @@ export function draw(cardId) {
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 6;
             ctx.shadowColor = "#601416";
-            ctx.fillText(cardPower.value, cardType.powerCenterCoords[0], cardType.powerCenterCoords[1]);
+            ctx.fillText(cardPower, cardType.powerCenterCoords[0], cardType.powerCenterCoords[1]);
             ctx.shadowColor = "#535960";
-            let armorVal = cardArmor.value;
+            let armorVal = cardArmor;
             let armory = cardType.armorCenterCoords[1];
             if (armorVal == "~")
                 armory += 25;
             ctx.fillText(armorVal, cardType.armorCenterCoords[0], armory);
             ctx.fillStyle = "#000000";
             ctx.shadowOffsetY = 0;
-            ctx.strokeText(cardPower.value, cardType.powerCenterCoords[0], cardType.powerCenterCoords[1]);
-            ctx.strokeText(cardArmor.value, cardType.armorCenterCoords[0], armory);
+            ctx.strokeText(cardPower, cardType.powerCenterCoords[0], cardType.powerCenterCoords[1]);
+            ctx.strokeText(cardArmor, cardType.armorCenterCoords[0], armory);
             ctx.restore();
         });
 
@@ -307,20 +355,20 @@ export function draw(cardId) {
         do {
             decknamefontsize--;
             ctx.font = `bold ${decknamefontsize}px ${cardTitleFont}`;
-            textSize = ctx.measureText(deckname.value).width;
+            textSize = ctx.measureText(deckname).width;
         } while (textSize > 375)
     });
-    writeText(deckname.value, 490, 945);
+    writeText(deckname, 490, 945);
     ctxOp((ctx) => {
         ctx.restore();
     });
-    let items = parseMarkdown(fulltext).split(`${controlSplit}`).map(txt => {
+    let items = parseMarkdown(cardText).split(`${controlSplit}`).map(txt => {
         let item = parse(txt, false)
         return item;
     });
 
     
-    let flavorTextItems = [parse(`${controlItalic}` + flavorText.value, true)];
+    let flavorTextItems = [parse(`${controlItalic}` + flavorText, true)];
     ctxOp((ctx) => ctx.fillStyle = "#000000");
     
     let getDrawables = (inputTextItems, inputFlavorTextItems) => {
@@ -328,7 +376,7 @@ export function draw(cardId) {
         let xoffset = cardType.textStartCoords[0];
         let yoffset = cardType.textStartCoords[1];
         let maxwidth = 570;
-        if (yoffset < 500 && aemberCount.value != undefined && aemberCount.value > 0) {
+        if (yoffset < 500 && aemberCount != undefined && aemberCount > 0) {
             xoffset += 60;
             maxwidth -= 60;
         }
@@ -500,7 +548,7 @@ export function draw(cardId) {
             }
 
     });
-    globalMessage(`Finished drawing ${cardTitle.value}`);
+    globalMessage(`Finished drawing ${cardTitle}`);
 }
 
 function writeText(textToWrite, xoffset, yoffset)

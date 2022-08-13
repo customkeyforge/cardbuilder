@@ -79,6 +79,14 @@ export function parseColor(colorstring) {
     return newColor;
 }
 
+export function isImageData(imgsrc) {
+    return imgsrc != null && imgsrc.startsWith("data:image");
+}
+
+export function addImage(imageList, image) {
+    imageList.push(image);
+    return imageList.length - 1;
+};
 export function getrgbString(color) {
     return `${color[0].toString(16).padStart(2, '0')}${color[1].toString(16).padStart(2, '0')}${color[2].toString(16).padStart(2, '0')}`;
 };

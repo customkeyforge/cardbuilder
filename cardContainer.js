@@ -1,5 +1,5 @@
 export const name = "cardContainer";
-import { hookupImageLoadFromFile, hookupLoadFromFile, throttle, parseColor } from "./utils.js";
+import { hookupImageLoadFromFile, hookupLoadFromFile, throttle, parseColor, addImage, isImageData } from "./utils.js";
 import { ColorManager } from "./colorManager.js";
 import { drawAsync, draw, artCropRatio } from "./cardDrawer.js";
 import { setPresetOptions } from "./presetDropdown.js";
@@ -41,10 +41,10 @@ export class CardContainer {
             let section = createChild(parent, "div", "", "cardsection");
             acc.addEventListener("click", function() {
                 this.classList.toggle("active");
-                if (section.style.display === "block") {
+                if (section.style.display === "inline") {
                     section.style.display = "none";
                 } else {
-                    section.style.display = "block";
+                    section.style.display = "inline";
                 }
             }); 
             populateFunction(section);
@@ -344,4 +344,62 @@ export class CardContainer {
     newline(cc) {
         cc.appendChild(document.createElement("br"));
     }
+}
+
+export function serializeCardFromDom(cardId, images) {
+    let cardObj = {};
+    let cardText = document.querySelector(`#${cardId} #cardText`);
+    cardObj.text = cardText.value;
+    let cardTraits = document.querySelector(`#${cardId} #cardTraits`);
+    cardObj.traits = cardTraits.value;
+    let cardType = document.querySelector(`#${cardId} #cardType`);
+    cardObj.cardType = cardType.value ?? "Action";
+    let cardTitle = document.querySelector(`#${cardId}  #cardTitle`);
+    cardObj.title = cardTitle.value;
+    let cardQuantity = document.querySelector(`#${cardId}  #quantity`);
+    cardObj.quantity = cardQuantity.value;
+    let cardPower = document.querySelector(`#${cardId}  #cardPower`);
+    cardObj.power = cardPower.value;
+    let cardArmor = document.querySelector(`#${cardId}  #cardArmor`);
+    cardObj.armor = cardArmor.value;
+    let flavorText = document.querySelector(`#${cardId}  #flavorText`);
+    cardObj.flavorText = flavorText.value;
+    
+    let aemberCount = document.querySelector(`#${cardId}  #aemberCount`);
+    if (aemberCount.value != null)
+        cardObj.aemberCount = aemberCount.value;
+    let artImg = document.querySelector(`#${cardId}  #artImg`);
+    if (isImageData(artImg.src))
+        cardObj.artImage = addImage(images, artImg.src);
+    cardObj.notes = document.querySelector(`#${cardId}  #cardNotes`).value ?? "";
+    let customDiv = document.querySelector(`#${cardId}  #customDiv`);
+    if (customDiv.style.display != "none") {
+        let customPreset = document.querySelector(`#${cardId}  #customDiv .presetSelector`);
+        cardObj.overrides = {
+            preset: customPreset.value
+        } 
+        let customTypeName = document.querySelector(`#${cardId}  #customDiv #customTypeName`);
+        cardObj.overrides.customTypeName = customTypeName.value ?? "";
+        let customCardBackImg = document.querySelector(`#${cardId}  #customDiv #customCardBackImg`);
+        if (isImageData(customCardBackImg.src))
+            cardObj.overrides.customCardBack = addImage(images, customCardBackImg.src);;
+
+        if (customPreset.value == "Custom") {
+            let customIconDiv = document.querySelector(`#${cardId}  #customDiv #colorDiv #customIconDiv`);
+            let customIconPreset = document.querySelector(`#${cardId}  #customDiv #colorDiv .presetSelector`);
+            cardObj.overrides.customIconPreset = customIconPreset.value;
+            if (customIconDiv.style.display != "none") {
+                let customIconImg = document.querySelector(`#${cardId}  #customDiv #colorDiv #customIconDiv img`);
+                cardObj.overrides.customIconData = addImage(images, customIconImg.src);
+            }
+
+            let cardPrimary = document.querySelector(`#${cardId} #customDiv #colorDiv #primarycolor`).getAttribute("customcolor")
+            let cardSecondary = document.querySelector(`#${cardId} #customDiv #colorDiv #secondarycolor`).getAttribute("customcolor")
+            let cardTextBg = document.querySelector(`#${cardId} #customDiv #colorDiv #textbgcolor`).getAttribute("customcolor")
+            cardObj.overrides.primaryColor = cardPrimary
+            cardObj.overrides.secondaryColor = cardSecondary
+            cardObj.overrides.textBackgroundColor = cardTextBg
+        }
+    }
+    return cardObj;
 }
