@@ -173,6 +173,18 @@ body {
   flex-direction: column-reverse;
   width: 100%;
 }
+#myProgress {
+  width: 100%;
+  display: none;
+  background-color: grey;
+}
+
+#myBar {
+  width: 1%;
+  display: none;
+  height: 30px;
+  background-color: green;
+}
 
 /*Flexbox gives us the flexiness we need. The top just stays put as there is no scrolling on the body due to the page never exceeding viewport height*/
 #globalmessagecontainer {

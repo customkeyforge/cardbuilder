@@ -9,6 +9,7 @@
      <link  href="vanilla-picker.csp.css" rel="stylesheet">
      <script type="text/javascript" src="cropper.js"></script>
      <script type="module" src="https://cdn.jsdelivr.net/npm/client-zip/index.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
      <script type="module" src="load.js" crossorigin="anonymous"></script>
 
     <script type="text/javascript" src="cardTypes.js" crossorigin="anonymous"></script>
@@ -47,6 +48,10 @@
                               </select>
                               <input type="checkbox" id="exportCardBacks" name="exportCardBacks"/>
                               <label for="exportCardBacks">Include Card Backs</label>
+                              <div id="myProgress">
+                                   <div id="myBar"></div>
+                                 </div>
+                                 <span id="exportMessage"></span>
                          </div>
                     </div>
                     <div id="global"  style="display: none;">
