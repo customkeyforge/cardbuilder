@@ -9,8 +9,10 @@ export function rebuildJSON(e) {
     let returnObj = {};
     returnObj.global = {};
     let deckname = document.querySelector(`#deckname`);
+    let readme = document.querySelector(`#readme`);
     returnObj.global.explanation = "This JSON file represents a custom Keyforge adventure. To get a printable (therefore playable) version, upload it to FILL IN URL HERE."
     returnObj.global.deckname = deckname.value;
+    returnObj.global.readme = readme.value;
     returnObj.global.preset = globalpreset.value;
     returnObj.cards = [];
     returnObj.images = [];

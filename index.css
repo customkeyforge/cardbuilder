@@ -20,7 +20,7 @@
 *{
     list-style: none;
     text-decoration: none;
-    margin: 0;
+    margin: 5px 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Open Sans', sans-serif;
@@ -94,6 +94,11 @@ textarea {
 */
 #deleteCard {
   float: right;
+}
+
+#readme {
+  width: 80%;
+  height: 80%;
 }
 
 
