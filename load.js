@@ -82,13 +82,15 @@ function loadContent(){
     else {
         if (loc == "globalimportexport")
             targetLocation = "importexport";
+        if (loc == "globalwelcome")
+            targetLocation = "welcome";
         if (loc == "globalsettings")
             targetLocation = "global";
         if (loc == "globalrules")
             targetLocation = "rules";
     }
     if (targetLocation == "") 
-        targetLocation = "global";
+        targetLocation = "welcome";
     loadSub(targetLocation);
   }
   
@@ -98,7 +100,7 @@ async function setup() {
     globalContext = new GlobalContext();
     await globalContext.setup();
     if(!location.hash) {
-        location.hash = "#globalsettings";
+        location.hash = "#globalwelcome";
     }
         
     loadContent();

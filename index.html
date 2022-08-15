@@ -27,12 +27,34 @@
                <div id="menudiv" class="flex-child">
                     <input id="addcard" type="button" value="Add New Card"/> 
                     <ul id="menu">
+                         <li><a href="#globalwelcome">Welcome</a></li>
                          <li><a href="#globalimportexport">Import/Export</a></li>
                          <li><a href="#globalsettings">Global Settings</a></li>
                          <li><a href="#globalrules">Rules/Readme</a></li>
                     </ul>
                </div>
                <div id="maincontent" class="flex-child">
+                    <div id="welcome" style="display: none;">
+                         <h3>Welcome</h3>
+                         This web tool will help you create your own custom Keyforge Adventure deck, or print out someone else's. To explain:
+                         <ul>
+                              <li><a href="https://keyforging.com">Keyforge</a> is a competitive 1v1 card game published by Ghost Galaxy Games.</li>
+                              <li><a href="https://sites.google.com/view/keyforgeadventures/home">Keyforge Adventures</a> are a cooperative game mode where players can work together to win. There have been 2 official releases, and several community-created ones.</li>
+                         </ul>
+                         This tool will help the Keyforge community create more custom adventures. I do recommend creating one yourself, since it is a great way to get into creating games.
+
+                         <h3>Gettting Started</h3>
+                         You can started by clicking the "Add New Card" button to the left. After you spend some time creating your cards, you may need to take a break. 
+                         Click the "Import/Export" button to save your deck as a JSON file. When you come back, use Import to load your deck again and pick up where you left off.
+
+                         <h3>Printing</h3>
+                         The same "Import/Export" button will take you to the spot to export your deck as a printable set (either PNGs or a PDF). 
+
+                         <h3>A sample deck</h3>
+                         If you want to load a sample deck to see what a Keyforge Adventure looks like, import this URL:
+
+                         <a href="https://raw.githubusercontent.com/customkeyforge/cardbuilder/main/sampleAdventures/Total%20Distruction.json">https://raw.githubusercontent.com/customkeyforge/cardbuilder/main/sampleAdventures/Total%20Distruction.json</a>
+                    </div>
                     <div id="importexport" style="display: none;">
                          <div>Import deck from a JSON file <input id="importJSON" type="file"/></div>
                          <div>Export deck to a JSON file <input id="exportJSON" type="button" value="Export..."/></div>
