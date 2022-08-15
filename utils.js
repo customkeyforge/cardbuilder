@@ -95,10 +95,13 @@ export function findImageInDomByHash(imageHash) {
     return allImages.filter((img) => img.getAttribute("imgsrchash") == `${imageHash}`)[0];
 }
 
-export function addImage(imageList, image) {
-    imageList.push(image);
-    return imageList.length - 1;
+export function addImage(imagehash, image) {
+    let hash = `${getCrcHashForString(image)}`;
+    if (imagehash[hash] == null)
+        imagehash[hash] = image;
+    return hash;
 };
+
 export function getrgbString(color) {
     return `${color[0].toString(16).padStart(2, '0')}${color[1].toString(16).padStart(2, '0')}${color[2].toString(16).padStart(2, '0')}`;
 };

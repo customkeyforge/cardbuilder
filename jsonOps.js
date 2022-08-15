@@ -15,7 +15,7 @@ export function rebuildJSON(e) {
     returnObj.global.readme = readme.value;
     returnObj.global.preset = globalpreset.value;
     returnObj.cards = [];
-    returnObj.images = [];
+    returnObj.images = {};
     let globalContext = new GlobalContext();
     
     let globalCardBackImg = document.getElementById('globalCardBackImg');

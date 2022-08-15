@@ -8,7 +8,6 @@ export class GlobalContext {
     primaryColor = [200, 33, 0];
     secondaryColor = [200, 120, 66];
     textBackgroundColor = [20, 33, 44];
-    globalIconName = "";
     globalIconHash = "";
     globalPreset = {};
     static instance;

@@ -90,7 +90,7 @@ export function draw(cardId) {
     
     let decknameObj = document.getElementById('deckname');
     let deckname = decknameObj.value;
-    let images = [];
+    let images = {};
     
     let cardContainerObj = document.getElementById(cardId);
     if (cardContainerObj == null)
