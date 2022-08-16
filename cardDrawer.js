@@ -103,8 +103,8 @@ export function draw(cardId) {
     if (bigcanvas == null)
         return;
     
-    textbadgecanvas = document.querySelector(`#textbadgecanvas`);
-    pipcanvas = document.querySelector(`#pipcanvas`);
+    let textbadgecanvas = document.querySelector(`#textbadgecanvas`);
+    let pipcanvas = document.querySelector(`#pipcanvas`);
     let colorswapcanvas = document.querySelector(`#colorswapcanvas`);
     
     bigcanvas.width = 715;

@@ -212,7 +212,7 @@ function applyJSON(j) {
     }
     presetChanged(globalpreset, "#global #colorDiv", globalPresetChanged);
     presetChanged(globaliconpreset, "#global #globalcustomicondiv", globalIconPresetChanged);
-    cardlist = document.getElementById("cardlist");
+    let cardlist = document.getElementById("cardlist");
     clearChildren(cardlist);
     document.querySelectorAll("#menu > .cardSelector").forEach(element => {
         element.remove();
