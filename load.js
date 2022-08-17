@@ -4,7 +4,7 @@ var secondaryColorManager = {};
 var textBackgroundColorManager = {};
 var globalpreset = {};
 var globalContext = {};
-import { hookupImageLoadFromFile, hookupLoadFromFile, throttle, globalMessage, parseColor, clearChildren, getCrcHashForString } from "./utils.js"
+import { hookupImageLoadFromFile, hookupLoadFromFile, throttle, globalMessage, parseColor, clearChildren, getCrcHashForString, cardElement } from "./utils.js"
 import { CardContainer } from "./cardContainer.js"
 import { ColorManager } from "./colorManager.js"
 import { draw, warmUpFonts, drawCurrent } from "./cardDrawer.js"
@@ -62,6 +62,9 @@ function navigateTo(newLocation) {
 
 function loadSub(newLocation){
     hideEverything();
+    if (newLocation == "importexport") {
+        refreshCardExportSelector();
+    }
     let target = document.getElementById(newLocation);
     if (target != null)
         target.style.display = "inline";
@@ -92,8 +95,39 @@ function loadContent(){
     if (targetLocation == "") 
         targetLocation = "welcome";
     loadSub(targetLocation);
-  }
+}
   
+function refreshCardExportSelector() {
+    let exportAllCards = document.getElementById('exportAllCards');
+    let ces = document.getElementById('cardExportSelector');
+    clearChildren(ces);
+    let ccs = document.querySelectorAll(".cardcontainer");
+    let outputs = [];
+    ccs.forEach(cc => {
+        let lastChange = globalContext.getLastChangeTime(cc);
+        let titleElem = cardElement(cc.id, "cardTitle");
+        outputs.push({
+            cardId: `${cc.id}`,
+            text: `${titleElem.value}: (last changed ${lastChange})`,
+            lastChange: lastChange
+        });
+    });
+    //reverse sort the outputs
+    outputs.sort((a, b) => (a.lastChange < b.lastChange) ? 1 : -1);
+    outputs.forEach(o => {
+        let check = document.createElement("input");
+        check.type = "checkbox";
+        check.id = `${o.cardId}check`;
+        check.setAttribute("cardId", o.cardId);
+        check.checked = exportAllCards.checked;
+        ces.appendChild(check);
+        let label = document.createElement("label");
+        label.setAttribute("for", `${o.cardId}check`);
+        label.textContent = o.text;
+        ces.appendChild(label);
+        ces.appendChild(document.createElement("br"));
+    });
+}
   
 async function setup() {
 
@@ -134,6 +168,7 @@ async function setup() {
     hookupLoadFromFile("#importJSON", true, async (result) => {
         //let blob = await fetch(result).then(r => r.blob());
         applyJSON(result);
+        refreshCardExportSelector();
     });
     let exportJSONButton = document.getElementById('exportJSON');
 
@@ -147,6 +182,23 @@ async function setup() {
         a.click();
     };
 
+    let setAllCardCheckboxes = (value) => {
+        document.querySelectorAll("#cardExportSelector input").forEach((checkbox) => {
+            checkbox.checked = value;
+        });
+    };
+    let exportAllCards = document.getElementById('exportAllCards');
+    let cardExportSelector = document.getElementById('cardExportSelector');
+    exportAllCards.onchange = (e) => {
+        if (exportAllCards.checked == false) {
+            cardExportSelector.style.display = "block";
+            setAllCardCheckboxes(false);
+        }
+        else {
+            setAllCardCheckboxes(true);
+            cardExportSelector.style.display = "none";
+        }
+    };
     
     
     exportZip.onclick = async () => {
@@ -187,6 +239,7 @@ function applyJSON(j) {
         return;
     globalMessage(`Creating cards.`)
     const obj = JSON.parse(j);
+    globalContext.changeTracker = obj.changeTracker ?? {};
     globalpreset.value = obj.global.preset
     let deckname = document.querySelector(`#deckname`);
     deckname.value = obj.global.deckname ?? "";

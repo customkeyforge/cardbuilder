@@ -101,7 +101,9 @@ textarea {
   height: 80%;
 }
 
-
+#cardExportSelector {
+  column-count: 3;
+}
 
 .wrapper {
   display: grid;

@@ -1,6 +1,7 @@
 export const name = "globalContext";
+import { serializeCardFromDom } from "./cardContainer.js";
 import { CardType } from "./cardTypes.js"
-import { findImageInDomByName, getCrcHashForString } from "./utils.js";
+import { findImageInDomByName, getCrcHashForObject, getCrcHashForString } from "./utils.js";
 export class GlobalContext {
     cardTypes = [];
     presets = [];
@@ -10,12 +11,14 @@ export class GlobalContext {
     textBackgroundColor = [20, 33, 44];
     globalIconHash = "";
     globalPreset = {};
+    changeTracker = {};
     static instance;
     constructor() {
         if (GlobalContext.instance) {
         return GlobalContext.instance;
         }
         GlobalContext.instance = this;
+        
            
         this.setup = async () => {
             var myHeaders = new Headers();
@@ -40,6 +43,26 @@ export class GlobalContext {
             this.globalPreset = this.presets[0];
             
             this.cardTypes = [new CardType("Action", 715), new CardType("Artifact", 715), new CardType("Creature", 715), new CardType("Upgrade", 715)];
+        }
+
+        this.getHashForCard = (cardContainerId) => {
+            let cardObj = serializeCardFromDom(cardContainerId);
+            let cardHash = getCrcHashForObject(cardObj);
+            return cardHash;
+        };
+        this.getLastChangeTime = (cardContainerElement) => {
+            let guid = cardContainerElement.getAttribute("cardId");
+            let hash = this.getHashForCard(cardContainerElement.id);
+            if (this.changeTracker[guid] == null 
+                || (this.changeTracker[guid] != null
+                    && hash != this.changeTracker[guid].hash)) {
+                //Update the change tracker.
+                this.changeTracker[guid] = {
+                    changeTime: new Date().toUTCString(),
+                    hash: hash
+                }
+            }
+            return this.changeTracker[guid].changeTime;
         }
         
         this.findPreset = (presetString) => {

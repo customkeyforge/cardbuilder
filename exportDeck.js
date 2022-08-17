@@ -78,7 +78,12 @@ export async function exportDeckForPrint() {
     let currentCol = 0;
     let imagePages = [];
     let pageSaved = false;
-    let cards = Array.from(document.querySelectorAll(".cardcontainer"));
+    //let cards = Array.from(document.querySelectorAll(".cardcontainer"));
+    let cards = [];
+    document.querySelectorAll("#cardExportSelector input").forEach((checkbox) => {
+        if (checkbox.checked)
+            cards.push(document.getElementById(checkbox.getAttribute("cardId")));
+    });
     let fileName = "";
     let backFileName = "";
     let pageNumber = 1;

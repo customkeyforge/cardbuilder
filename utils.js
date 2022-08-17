@@ -97,7 +97,7 @@ export function findImageInDomByHash(imageHash) {
 
 export function addImage(imagehash, image) {
     let hash = `${getCrcHashForString(image)}`;
-    if (imagehash[hash] == null)
+    if (imagehash != null && imagehash[hash] == null)
         imagehash[hash] = image;
     return hash;
 };

@@ -61,6 +61,8 @@ export class CardContainer {
         toplevel.style.display = "none";
         let cc = createChild(toplevel, "div", "", "wrapper");
 
+        let cardGuid = cardObj.cardId ?? crypto.randomUUID();
+        toplevel.setAttribute("cardId", cardGuid);
         let typeSelector = {};
         let quantitySelector = {};
         let ctitle = {};
@@ -96,18 +98,11 @@ export class CardContainer {
             typeSelector.value= cardObj.cardType ?? "Action";
             ctitle = createChild(section, "input", "cardTitle", "", false, "Title: ");
             ctitle.value = cardObj.title;
+
             quantitySelector = createChild(section, "select", `quantity`, "", false, "Quantity: ");
+            for( var i = 0; i < 20; i++)
             {
-                let zer = createChild(quantitySelector, "option", "0", "", false); zer.value = 0; zer.textContent = "0";
-                let one = createChild(quantitySelector, "option", "1", "", false); one.value = 1; one.textContent = "1";
-                let two = createChild(quantitySelector, "option", "2", "", false); two.value = 2; two.textContent = "2";
-                let thr = createChild(quantitySelector, "option", "3", "", false); thr.value = 3; thr.textContent = "3";
-                let fou = createChild(quantitySelector, "option", "4", "", false); fou.value = 4; fou.textContent = "4";
-                let fiv = createChild(quantitySelector, "option", "5", "", false); fiv.value = 5; fiv.textContent = "5";
-                let six = createChild(quantitySelector, "option", "6", "", false); six.value = 6; six.textContent = "6";
-                let sev = createChild(quantitySelector, "option", "7", "", false); sev.value = 7; sev.textContent = "7";
-                let eig = createChild(quantitySelector, "option", "8", "", false); eig.value = 8; eig.textContent = "8";
-                let nin = createChild(quantitySelector, "option", "9", "", false); nin.value = 9; nin.textContent = "9";
+                let child = createChild(quantitySelector, "option", `${i}`, "", false); child.value = i; child.textContent = `${i}`;
             }
             quantitySelector.value = cardObj.quantity;
             ctraits = createChild(section, "input", "cardTraits", "", false, "Traits: ");
@@ -356,6 +351,8 @@ export class CardContainer {
 
 export function serializeCardFromDom(cardId, images) {
     let cardObj = {};
+    let toplevel = document.querySelector(`#${cardId}`);
+    cardObj.cardId = toplevel.getAttribute('cardId');
     let cardText = document.querySelector(`#${cardId} #cardText`);
     cardObj.text = cardText.value;
     let cardTraits = document.querySelector(`#${cardId} #cardTraits`);

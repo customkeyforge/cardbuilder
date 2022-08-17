@@ -17,7 +17,7 @@ export function rebuildJSON(e) {
     returnObj.cards = [];
     returnObj.images = {};
     let globalContext = new GlobalContext();
-    
+    returnObj.changeTracker = globalContext.changeTracker;
     let globalCardBackImg = document.getElementById('globalCardBackImg');
     if (isImageData(globalCardBackImg.src))
         returnObj.global.cardBack = addImage(returnObj.images, globalCardBackImg.src);

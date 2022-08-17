@@ -58,7 +58,8 @@
                     <div id="importexport" style="display: none;">
                          <div>Import deck from a JSON file <input id="importJSON" type="file"/></div>
                          <div>Export deck to a JSON file <input id="exportJSON" type="button" value="Export..."/></div>
-                         <div>Export deck for printing<input id="exportZip" type="button" value="Export For Printing..."/>
+                         <div>Export deck for printing
+                              <br>
                               <select id="exportStyle">
                                    <option value="3x3png">Arrange 9 cards in PNG files</option>
                                    <option value="2x2png">Arrange 4 cards in PNG files</option>
@@ -67,8 +68,12 @@
                                    <option value="2x2pdf">Arrange 4 cards page in a PDF file</option>
                                    <option value="1x1pdf">Single card per page in a PDF file</option>
                               </select>
-                              <input type="checkbox" id="exportCardBacks" name="exportCardBacks"/>
+                              <br><input type="checkbox" id="exportCardBacks" name="exportCardBacks"/>
                               <label for="exportCardBacks">Include Card Backs</label>
+                              <br><input type="checkbox" id="exportAllCards" name="exportAllCards" checked="true"/>
+                              <label for="exportAllCards">Export All Cards</label>
+                              <div id="cardExportSelector" style="display: none;"></div>
+                              <br><input id="exportZip" type="button" value="Export For Printing..."/>
                               <div id="myProgress">
                                    <div id="myBar"></div>
                                  </div>
