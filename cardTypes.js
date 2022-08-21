@@ -152,8 +152,8 @@ export class CardType {
             this.textBackgroundSolidImage = document.getElementById('artifact_text_background_solid');
             let textBackgroundAlphaImage = document.getElementById('artifact_text_background_alpha');
 
-            this.secondary3SolidImage = document.getElementById('upgrade_secondary_solid');
-            let secondary3AlphaImage = document.getElementById('upgrade_secondary_alpha');
+            this.secondary3SolidImage = document.getElementById('artifact_secondary_wide_solid');
+            let secondary3AlphaImage = document.getElementById('artifact_secondary_wide_alpha');
             
             this.secondarySolidImage = document.getElementById('artifact_secondary_solid');
             let secondaryAlphaImage = document.getElementById('artifact_secondary_alpha');
@@ -202,7 +202,7 @@ export class CardType {
             this.titleCurve[2] = [canvasWidth - x2,y3];
             this.titleCurve[3] = [canvasWidth - actionTextTitleXOffset,y4];
 
-            this.typeStartCoords = [177,128];
+            this.typeStartCoords = [177,125];
             this.typeRotation = 0;
         }else  if (typeName == "Creature") {
             this.primarySolidImage = document.getElementById('creature_primary_solid');
