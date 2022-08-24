@@ -43,7 +43,7 @@ export function warmUpFonts(canvas) {
     context.fillText('font initializing', 0, 0);
     context.font = `${globalFontBaseSize}px  bold RopaSansRegular`;
     context.fillText('font initializing', 0, 0);
-    context.font = `bold ${defaultTitleFontSize}px ${cardTitleFont}`;
+    context.font = `bold ${cardTitleFontSize}px ${cardTitleFont}`;
     context.fillText('font initializing', 0, 0);
     context.font = `bold ${doubleTitleFontSize}px ${cardTitleFont}`;
     context.fillText('font initializing', 0, 0);

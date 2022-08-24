@@ -148,7 +148,7 @@ export class CardContainer {
 
             customDiv = createChild(customizationDiv, "div", "customDiv", "", true);
                 customTypeName = createChild(customDiv, "input", "customTypeName", "", true, "Custom Type Name: ");
-                customCardBackFilePicker = createChild(customDiv, "input", "customCardBackFilePicker", "", false);
+                customCardBackFilePicker = createChild(customDiv, "input", "customCardBackFilePicker", "", false, "Card back: ");
                 customCardBackFilePicker.type="file";
                 customCardBackImg = createChild(customDiv, "img", "customCardBackImg", "", true);
                 customCardBackImg.height = 100;
@@ -170,7 +170,7 @@ export class CardContainer {
         createAccordion("Art", sideBar, (section) => {
             let cardArtDiv = createChild(section, "div", "cardArtDiv", "cardArtDiv", false,);
 
-            artFilePicker = createChild(cardArtDiv, "input", "artFilePicker", "", false, "Choose Card Art");
+            artFilePicker = createChild(cardArtDiv, "input", "artFilePicker", "", false, "Choose Card Art: ");
             artFilePicker.type="file";
             artcan = createChild(cardArtDiv, "canvas", "artcanvas", "", true);
             artcan.width=357; artcan.height=500;  artcan.style.display="none"; 

@@ -175,9 +175,13 @@ async function setup() {
     exportJSONButton.onclick = () => {
         let jsonString = rebuildJSON();
         var a = document.createElement("a");
-        var file = new Blob([jsonString], {type: "text/plain"});
+        var file = new Blob([jsonString], {type: "text/json"});
         a.href = URL.createObjectURL(file);
-        let deckname = document.getElementById('deckname').value ?? "adventure";
+        
+        let deckname = "adventure";
+        let testdeckname = document.getElementById('deckname').value;
+        if (testdeckname != "")
+            deckname = testdeckname;
         a.download = `${deckname}.json`;
         a.click();
     };
