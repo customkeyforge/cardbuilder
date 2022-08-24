@@ -172,7 +172,7 @@ export class CardType {
             this.fallbackOffset = 55;
 
             this.textStampShouldClip  = true;
-            this.getClippingPath = (ctx) => {
+            this.getClippingPath = (scalex, scaley) => {
                 let one =  {x: 47, y:1000};
                 let two =  {x: one.x, y:650};
                 let thr =  {x: 148, y:600};
@@ -180,13 +180,20 @@ export class CardType {
                 let fiv =  {x: 667, y:two.y};
                 let six =  {x: fiv.x, y:one.y};
                 let p = new Path2D();
-                p.moveTo(one.x, one.y);
-                p.lineTo(two.x,two.y);
-                p.lineTo(thr.x,thr.y);
-                p.lineTo(fou.x,fou.y);
-                p.lineTo(fiv.x,fiv.y);
-                p.lineTo(six.x,six.y);
-                p.lineTo(one.x, one.y);
+                let sx = (input) => {
+                    return input * scalex;
+                }
+                let sy = (input) => {
+                    return input * scaley;
+                }
+
+                p.moveTo(sx(one.x), sy(one.y));
+                p.lineTo(sx(two.x), sy(two.y));
+                p.lineTo(sx(thr.x), sy(thr.y));
+                p.lineTo(sx(fou.x), sy(fou.y));
+                p.lineTo(sx(fiv.x), sy(fiv.y));
+                p.lineTo(sx(six.x), sy(six.y));
+                p.lineTo(sx(one.x), sy(one.y));
                 return p;
             };
             let actionTextTitleXOffset = 110;
@@ -234,7 +241,7 @@ export class CardType {
             this.fallbackOffset = 30;
 
             this.textStampShouldClip  = true;
-            this.getClippingPath = (ctx) => {
+            this.getClippingPath = (scalex, scaley) => {
                 let one =  {x: 47, y:1000};
                 let two =  {x: one.x, y:650};
                 let thr =  {x: 148, y:600};
@@ -242,13 +249,19 @@ export class CardType {
                 let fiv =  {x: 667, y:two.y};
                 let six =  {x: fiv.x, y:one.y};
                 let p = new Path2D();
-                p.moveTo(one.x, one.y);
-                p.lineTo(two.x,two.y);
-                p.lineTo(thr.x,thr.y);
-                p.lineTo(fou.x,fou.y);
-                p.lineTo(fiv.x,fiv.y);
-                p.lineTo(six.x,six.y);
-                p.lineTo(one.x, one.y);
+                let sx = (input) => {
+                    return input * scalex;
+                }
+                let sy = (input) => {
+                    return input * scaley;
+                }
+                p.moveTo(sx(one.x), sy(one.y));
+                p.lineTo(sx(two.x), sy(two.y));
+                p.lineTo(sx(thr.x), sy(thr.y));
+                p.lineTo(sx(fou.x), sy(fou.y));
+                p.lineTo(sx(fiv.x), sy(fiv.y));
+                p.lineTo(sx(six.x), sy(six.y));
+                p.lineTo(sx(one.x), sy(one.y));
                 return p;
             };
             let actionTextTitleXOffset = 130;

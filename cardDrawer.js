@@ -80,9 +80,14 @@ function convertDataURL(dataURL) {
 }
 
 export function draw(cardId) {
+    let defaultCanvasWidth = 715;
+    let defaultCanvasHeight = 1000;
     let canvasWidth = 715;
-    let canvasHeight = 1000;
-    
+    let scalex = 1;
+    let scaley = 1;
+
+    let defaultTextBadgeWidth = 400;
+
     aemberImage = document.getElementById('aember');
     damageImage = document.getElementById('damage');
     pipSolidImage = document.getElementById('1pip_solid');
@@ -98,6 +103,10 @@ export function draw(cardId) {
     globalMessage(`Started drawing ${cardId}`);
     let cardObj = serializeCardFromDom(cardId, images);
 
+    if (cardObj.doubleSize) {
+        scalex = defaultCanvasHeight / defaultCanvasWidth;
+        scaley = (defaultCanvasWidth * 2) / defaultCanvasHeight;
+    }
     let cc = document.querySelector(`#${cardId}`);
     bigcanvas = cardElement(cardId, 'bigcanvas');
     if (bigcanvas == null)
@@ -107,9 +116,22 @@ export function draw(cardId) {
     let pipcanvas = document.querySelector(`#pipcanvas`);
     let colorswapcanvas = document.querySelector(`#colorswapcanvas`);
     
-    bigcanvas.width = 715;
-    bigcanvas.height = 1000;
-    
+    canvasWidth = defaultCanvasWidth * scalex
+    bigcanvas.width = canvasWidth;
+    bigcanvas.height = defaultCanvasHeight * scaley;
+
+    let displayHeight = 700;
+    bigcanvas.style.width=`${bigcanvas.width * (displayHeight / bigcanvas.height)}px`; bigcanvas.style.height=`${displayHeight}px`;
+           
+  //  bigcanvas.style.width = `${bigcanvas.width / scalex}px`;
+  //  bigcanvas.style.height = `${bigcanvas.height }px`;
+
+    let sx = (input) => {
+        return input * scalex;
+    }
+    let sy = (input) => {
+        return input * scaley;
+    }
     let globalContext = new GlobalContext();
     let cardText = cardObj.text;
     let cardTraits = cardObj.traits;
@@ -196,11 +218,14 @@ export function draw(cardId) {
 
     ctxOp((ctx) => ctx.font = `${globalFontBaseSize}px QuicksandMedium`);
 
+    let drawImageFull = (img, targetContext) => {
+        targetContext.drawImage(img, 0,0, sx(defaultCanvasWidth), sy(defaultCanvasHeight));
+    };
     let fixColorInImage = (img, targetContext, color) => {
         colorswapcontext.clearRect(0,0,5000,5000);
         colorswapcontext.drawImage(img, 0, 0);
         replaceColor(colorswapcontext, color);
-        targetContext.drawImage(colorswapcanvas, 0,0);
+        drawImageFull(colorswapcanvas, targetContext);
     };
     cardType.drawSteps.forEach(image => {
 //        console.log("drawing image");
@@ -209,11 +234,11 @@ export function draw(cardId) {
             {
                 let startx = cardType.artCoords[0];
                 let starty = cardType.artCoords[1];
-                let endx = canvasWidth - startx;
+                let endx = defaultCanvasWidth - startx;
                 let artWidth = endx - startx;
                 let artHeight = artWidth * artCropRatio;
                 if (artImg != null)
-                    ctx.drawImage(convertDataURL(artImg), startx,starty,artWidth, artHeight);
+                    ctx.drawImage(convertDataURL(artImg), sx(startx),sy(starty),sx(artWidth), sy(artHeight));
             }
             else if (image == fixPrimaryColor) 
             {
@@ -244,22 +269,22 @@ export function draw(cardId) {
                 ctx.save();
                 if (cardType.textStampShouldClip)
                 {
-                    let path = cardType.getClippingPath();
+                    let path = cardType.getClippingPath(scalex, scaley);
                     ctx.strokeStyle = 'black';
                     ctx.lineWidth = 5;
                     //ctx.stroke(path);   
                     ctx.clip(path);   
                 }
-                ctx.drawImage(textbadgecanvas, cardType.textBadgeCoords[0],cardType.textBadgeCoords[1]);
+                ctx.drawImage(textbadgecanvas, sx(cardType.textBadgeCoords[0]),sy(cardType.textBadgeCoords[1]), sx(defaultTextBadgeWidth), sy(defaultTextBadgeWidth));
                 ctx.restore();
             }
             else
-                ctx.drawImage(image, 0, 0)
+                drawImageFull(image, ctx);
         });
     });
 
     if (iconImage != null)
-        ctxOp((ctx) => {ctx.drawImage(iconImage, 32, 20, 140, 140)});
+        ctxOp((ctx) => {ctx.drawImage(iconImage, sx(32), sy(20), sx(140), sy(140))});
     
     if (aemberCount != undefined && aemberCount > 0) {
         pipcontext.clearRect(0,0,1000, 1000);
@@ -270,7 +295,7 @@ export function draw(cardId) {
         var pipybaseline = 145;
         var pipHeight = 100;
         for (var j = 0; j< aemberCount; j++)
-            ctxOp((ctx) => {ctx.drawImage(pipcanvas, 28, pipybaseline + (j * pipHeight), pipHeight, pipHeight  )});
+            ctxOp((ctx) => {ctx.drawImage(pipcanvas, sx(28), sy(pipybaseline + (j * pipHeight)), sx(pipHeight), sy(pipHeight)  )});
     }
 
     ctxOp((ctx) => 
@@ -282,10 +307,10 @@ export function draw(cardId) {
         drawCircle(ctx, tc[2][0], tc[2][1]);
         drawCircle(ctx, tc[3][0], tc[3][1]);*/
         textOnCurve(ctx, cardTitle, 
-            tc[0][0], tc[0][1],
-            tc[1][0], tc[1][1],
-            tc[2][0], tc[2][1],
-            tc[3][0], tc[3][1], cardTitleFontSize, cardTitleFont, cardType.fallbackOffset);
+            sx(tc[0][0]), sy(tc[0][1]),
+            sx(tc[1][0]), sy(tc[1][1]),
+            sx(tc[2][0]), sy(tc[2][1]),
+            sx(tc[3][0]), sy(tc[3][1]), cardTitleFontSize, cardTitleFont, cardType.fallbackOffset);
 
         ctx.save();
         ctx.font = cardTypeFont;
@@ -294,13 +319,13 @@ export function draw(cardId) {
         ctx.shadowOffsetY = 3;
         ctx.shadowColor = "#222222";
 
-        ctx.translate(cardType.typeStartCoords[0], cardType.typeStartCoords[1]);
+        ctx.translate(sx(cardType.typeStartCoords[0]), sy(cardType.typeStartCoords[1]));
         ctx.rotate(cardType.typeRotation * (Math.PI / 180));
         ctx.textAlign = "center";
         let tn = customTypeName;
         if (tn == "")
             tn = cardType.typeName.toUpperCase();
-        ctx.fillText(tn, cardType.typeStartCoords[0], 0);
+        ctx.fillText(tn, sx(cardType.typeStartCoords[0]), 0);
         ctx.restore();
     });
 
@@ -314,17 +339,17 @@ export function draw(cardId) {
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 6;
             ctx.shadowColor = "#601416";
-            ctx.fillText(cardPower, cardType.powerCenterCoords[0], cardType.powerCenterCoords[1]);
+            ctx.fillText(cardPower, sx(cardType.powerCenterCoords[0]), sy(cardType.powerCenterCoords[1]));
             ctx.shadowColor = "#535960";
             let armorVal = cardArmor;
             let armory = cardType.armorCenterCoords[1];
             if (armorVal == "~")
                 armory += 25;
-            ctx.fillText(armorVal, cardType.armorCenterCoords[0], armory);
+            ctx.fillText(armorVal, sx(cardType.armorCenterCoords[0]), sy(armory));
             ctx.fillStyle = "#000000";
             ctx.shadowOffsetY = 0;
-            ctx.strokeText(cardPower, cardType.powerCenterCoords[0], cardType.powerCenterCoords[1]);
-            ctx.strokeText(cardArmor, cardType.armorCenterCoords[0], armory);
+            ctx.strokeText(cardPower, sx(cardType.powerCenterCoords[0]), sy(cardType.powerCenterCoords[1]));
+            ctx.strokeText(cardArmor, sx(cardType.armorCenterCoords[0]), sy(armory));
             ctx.restore();
         });
 
@@ -334,7 +359,7 @@ export function draw(cardId) {
             ctx.font = cardTraitFont;
             ctx.textAlign = 'center';
         });
-        writeText(traitText, cardType.traitsCenterCoords[0], cardType.traitsCenterCoords[1]);
+        writeText(traitText, sx(cardType.traitsCenterCoords[0]), sy(cardType.traitsCenterCoords[1]));
         ctxOp((ctx) => {
             ctx.textAlign = 'left';
         });
@@ -352,9 +377,9 @@ export function draw(cardId) {
             decknamefontsize--;
             ctx.font = `bold ${decknamefontsize}px ${cardTitleFont}`;
             textSize = ctx.measureText(deckname).width;
-        } while (textSize > 375)
+        } while (textSize > sx(375))
     });
-    writeText(deckname, 490, 945);
+    writeText(deckname, sx(490), sy(945));
     ctxOp((ctx) => {
         ctx.restore();
     });
@@ -369,12 +394,12 @@ export function draw(cardId) {
     
     let getDrawables = (inputTextItems, inputFlavorTextItems) => {
         let totalHeight = 0;
-        let xoffset = cardType.textStartCoords[0];
-        let yoffset = cardType.textStartCoords[1];
-        let maxwidth = 570;
-        if (yoffset < 500 && aemberCount != undefined && aemberCount > 0) {
-            xoffset += 60;
-            maxwidth -= 60;
+        let xoffset = sx(cardType.textStartCoords[0]);
+        let yoffset = sy(cardType.textStartCoords[1]);
+        let maxwidth = sx(570);
+        if (yoffset < sy(500) && aemberCount != undefined && aemberCount > 0) {
+            xoffset += sx(60);
+            maxwidth -= sx(60);
         }
     
         let xoffsetStart = xoffset;

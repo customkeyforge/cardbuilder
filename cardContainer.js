@@ -49,6 +49,14 @@ export class CardContainer {
             }); 
             populateFunction(section);
         }
+        let createCheckbox = (parent, id, labelText) => {
+            let check = createChild(parent, "input", id, "", false);
+            check.type="checkbox";
+            let customLabel = createChild(parent, "label", "", "", true);
+            customLabel.setAttribute("for", id);
+            customLabel.textContent = labelText;
+            return check;
+        };
         let getDescriptionForMenu = () => {
             return `${ctitle.value} (${typeSelector.value}), ${quantitySelector.value} cop${(parseInt(quantitySelector.value) ?? 0) > 1 ? "ies" : "y"}`
         };
@@ -88,6 +96,7 @@ export class CardContainer {
         let colorDiv = {};
         let customIconDiv = {};
         let customTypeName = {};
+        let doubleSizeCheck = {};
         let sideBar = createChild(cc, "div", "sidebar", "sidebar");
 
         createAccordion("Card Details", sideBar, (section) => {
@@ -96,6 +105,8 @@ export class CardContainer {
                 let t = createChild(typeSelector, "option", `${type.typeName}`, "", false); t.value = type.typeName; t.textContent = type.typeName;
             });
             typeSelector.value= cardObj.cardType ?? "Action";
+            doubleSizeCheck = createCheckbox(section, "doubleSizeCheck", "Double Size");
+
             ctitle = createChild(section, "input", "cardTitle", "", false, "Title: ");
             ctitle.value = cardObj.title;
 
@@ -133,11 +144,7 @@ export class CardContainer {
         });
         createAccordion("Customize Look", sideBar, (section) => {
             let customizationDiv = createChild(section, "div", "customizationdiv", "customizationdiv", false);
-            customCheck = createChild(customizationDiv, "input", "customCheckbox", "", false);
-            customCheck.type="checkbox";
-            let customLabel = createChild(customizationDiv, "label", "", "", true);
-            customLabel.setAttribute("for", "customCheckbox");
-            customLabel.textContent = "Custom Look";
+            customCheck = createCheckbox(customizationDiv, "customCheckbox", "Custom Look");
 
             customDiv = createChild(customizationDiv, "div", "customDiv", "", true);
                 customTypeName = createChild(customDiv, "input", "customTypeName", "", true, "Custom Type Name: ");
@@ -189,7 +196,7 @@ export class CardContainer {
         };
 
         let bigcan = createChild(cc, "canvas", "bigcanvas", "", false, "", true);
-        bigcan.width=715; bigcan.height=1000; //bigcan.style.display="none";
+        //bigcan.width=715; bigcan.height=1000; //bigcan.style.display="none";
 
         let displayHeight = 700;
         bigcan.style.width=`${bigcan.width * (displayHeight / 1000)}px`; bigcan.style.height=`${displayHeight}px`;
@@ -222,7 +229,7 @@ export class CardContainer {
             sublink.textContent = getDescriptionForMenu();
             drawAsync(cardId);
         };
-        customTypeName.oninput = cardPower.oninput = cardArmor.oninput = flavorText.oninput = ctraits.oninput = ctext.oninput = throttle(() => {
+        doubleSizeCheck.onchange = customTypeName.oninput = cardPower.oninput = cardArmor.oninput = flavorText.oninput = ctraits.oninput = ctext.oninput = throttle(() => {
             drawAsync(cardId);
         }, 1000);
         customCheck.onchange = (e) => {
@@ -306,6 +313,8 @@ export class CardContainer {
             customCardBackImg.setAttribute("imgsrchash", getCrcHashForString(customCardBackImg.src));
         }
 
+        doubleSizeCheck.checked = cardObj.doubleSize ?? false;
+
         let cardSecColorMan = new ColorManager(`#${cardId} #secondarycolor`, "Secondary Color", seccolor);
         let cardTextBgColorMan = new ColorManager(`#${cardId} #textbgcolor`, "Text Background Color", textbgcolor);
         let cardPrimColorMan = new ColorManager(`#${cardId} #primarycolor`, "Primary Color", primcolor);
@@ -359,6 +368,8 @@ export function serializeCardFromDom(cardId, images) {
     cardObj.traits = cardTraits.value;
     let cardType = document.querySelector(`#${cardId} #cardType`);
     cardObj.cardType = cardType.value ?? "Action";
+    let doubleSizeCheck = document.querySelector(`#${cardId} #doubleSizeCheck`);
+    cardObj.doubleSize = doubleSizeCheck.checked ?? false;
     let cardTitle = document.querySelector(`#${cardId}  #cardTitle`);
     cardObj.title = cardTitle.value;
     let cardQuantity = document.querySelector(`#${cardId}  #quantity`);
