@@ -50,9 +50,9 @@ export class CardContainer {
             populateFunction(section);
         }
         let createCheckbox = (parent, id, labelText) => {
-            let check = createChild(parent, "input", id, "", false);
+            let check = createChild(parent, "input", id, "", false, " ");
             check.type="checkbox";
-            let customLabel = createChild(parent, "label", "", "", true);
+            let customLabel = createChild(check.parentElement, "label", "", "", true);
             customLabel.setAttribute("for", id);
             customLabel.textContent = labelText;
             return check;
