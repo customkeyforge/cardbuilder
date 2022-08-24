@@ -16,9 +16,13 @@ var controlDamage = "\u001C";
 var globalFontBaseSize = 28;
 var cardTitleFont = "";
 var cardTitleFontSize = 48;
+var cardTypeFontSize = 22;
 var cardPowerFont = "";
 var cardTypeFont = "";
 var cardTraitFont = "";
+var doubleTitleFontSize = cardTitleFontSize * 1.5;
+var doubleTypeFontSize = cardTypeFontSize * 1.5;
+var doubleCardTypeFont = "";
 export const artCropRatio = 1.15;
 
 var bigcanvas, bigcontext;
@@ -31,17 +35,21 @@ function ctxOp(callback)
 export function warmUpFonts(canvas) {
     let context = canvas.getContext('2d');
     cardTitleFont = "RopaSansRegular";
-    cardTitleFontSize = 48;
-    cardTypeFont = "bold 22px RopaSansRegular";
+    cardTypeFont = `bold ${cardTypeFontSize}px RopaSansRegular`;
+    doubleCardTypeFont = `bold ${doubleTypeFontSize}px RopaSansRegular`;
     cardTraitFont = "26px RopaSansRegular";
     cardPowerFont = `bold 78px Bombardier`;
     context.font = `${globalFontBaseSize}px QuicksandMedium`;
     context.fillText('font initializing', 0, 0);
     context.font = `${globalFontBaseSize}px  bold RopaSansRegular`;
     context.fillText('font initializing', 0, 0);
-    context.font = `bold ${cardTitleFontSize}px ${cardTitleFont}`;
+    context.font = `bold ${defaultTitleFontSize}px ${cardTitleFont}`;
+    context.fillText('font initializing', 0, 0);
+    context.font = `bold ${doubleTitleFontSize}px ${cardTitleFont}`;
     context.fillText('font initializing', 0, 0);
     context.font = cardTypeFont;
+    context.fillText('font initializing', 0, 0);
+    context.font = doubleCardTypeFont;
     context.fillText('font initializing', 0, 0);
     context.font = cardPowerFont;
     context.fillText('font initializing', 0, 0);
@@ -146,6 +154,7 @@ export function draw(cardId) {
     let cardArmor = cardObj.armor;
     let isCustom = cardObj.overrides != null;
     let overrides = cardObj.overrides;
+    let isDoubleSize = cardObj.doubleSize;
     let customTypeName =  "";
     let customIconName =  "";
     let overridePreset = null;
@@ -310,10 +319,10 @@ export function draw(cardId) {
             sx(tc[0][0]), sy(tc[0][1]),
             sx(tc[1][0]), sy(tc[1][1]),
             sx(tc[2][0]), sy(tc[2][1]),
-            sx(tc[3][0]), sy(tc[3][1]), cardTitleFontSize, cardTitleFont, cardType.fallbackOffset);
+            sx(tc[3][0]), sy(tc[3][1]), isDoubleSize ? doubleTitleFontSize : cardTitleFontSize, cardTitleFont, cardType.fallbackOffset);
 
         ctx.save();
-        ctx.font = cardTypeFont;
+        ctx.font = isDoubleSize ? doubleCardTypeFont : cardTypeFont;
         ctx.fillStyle = "#f3f3f3";
         ctx.shadowOffsetX = 1;
         ctx.shadowOffsetY = 3;
