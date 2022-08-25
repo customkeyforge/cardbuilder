@@ -148,11 +148,13 @@ async function setup() {
     
     globalpreset = document.getElementById('globalpreset');
     setPresetOptions(globalpreset, "#global #colorDiv", globalPresetChanged);
-    globalPresetChanged(globalContext.presets[0]);
+    globalpreset.removeChild(globalpreset.firstChild); //Delete the Default option
+    globalPresetChanged(globalContext.presets[1]);
 
     let globaliconpreset = document.getElementById('globaliconpreset');
     let globalCustomIconImg = document.getElementById('globalcustomiconimg');
     setPresetOptions(globaliconpreset, "#global #globalcustomicondiv", globalIconPresetChanged);
+    globaliconpreset.removeChild(globaliconpreset.firstChild); //Delete the Default option
     hookupImageLoadFromFile("#globalcustomiconpicker", globalCustomIconImg, (iconname, iconhash) => {
         globalContext.globalIconHash = iconhash;
     });

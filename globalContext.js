@@ -1,7 +1,7 @@
 export const name = "globalContext";
 import { serializeCardFromDom } from "./cardContainer.js";
 import { CardType } from "./cardTypes.js"
-import { findImageInDomByName, getCrcHashForObject, getCrcHashForString } from "./utils.js";
+import { findImageInDomByName, getCrcHashForObject, getCrcHashForString, getrgbString} from "./utils.js";
 export class GlobalContext {
     cardTypes = [];
     presets = [];
@@ -66,8 +66,19 @@ export class GlobalContext {
         }
         
         this.findPreset = (presetString) => {
-            //clone the object, since we want to make sure no one else is modifying the presets.
-            return JSON.parse(JSON.stringify(this.presets.filter((i) => i.name == presetString)[0]));
+            if (presetString == "Default") {
+                return {
+                    "name": "Default",
+                    "primaryColor": getrgbString(this.primaryColor),
+                    "secondaryColor": getrgbString(this.secondaryColor),
+                    "textBackgroundColor": getrgbString(this.textBackgroundColor),
+                    "iconhash": this.globalIconHash
+                }
+            }
+            else {
+                //clone the object, since we want to make sure no one else is modifying the presets.
+                return JSON.parse(JSON.stringify(this.presets.filter((i) => i.name == presetString)[0]));
+            }
         }
         this.setPrimaryColor = (newColor) => {
             this.primaryColor = newColor;

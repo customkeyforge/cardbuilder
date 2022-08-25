@@ -1,5 +1,9 @@
 [
     {
+        "name": "Default",
+        "isstandard": "false"
+    },
+    {
         "name": "Brobnar",
         "primaryColor": "f4322b",
         "secondaryColor": "f16b32",
