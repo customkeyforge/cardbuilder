@@ -78,8 +78,8 @@ export async function exportDeckForPrint() {
         rowCount = 1;
         colCount = 1;
     }
-    let contextWidth = colCount * cardWidth;
-    let contextHeight = rowCount * cardHeight;
+    let contextWidth = colCount * cardWidth + ((colCount- 1) * 2);
+    let contextHeight = rowCount * cardHeight + ((rowCount - 1) * 2);
     let doc = {};
     let pdftop = 0;
     let pdftopdouble = 0;
@@ -93,8 +93,8 @@ export async function exportDeckForPrint() {
         mmPerPixel = cardPrintWidth / cardWidth;
         //            doc = new jsPDF({unit: "mm", format: `[${colCount * cardPrintWidth},${rowCount * cardPrintHeight}]`});
         doc = new jsPDF({unit: "mm", format: "letter"});
-        pdfleft = (doc.internal.pageSize.getWidth() / 2) - ((cardPrintWidth * colCount) / 2);
-        pdftop = (doc.internal.pageSize.getHeight() / 2) - ((cardPrintHeight * rowCount) / 2);
+        pdfleft = (doc.internal.pageSize.getWidth() / 2) - ((contextWidth * mmPerPixel) / 2);
+        pdftop = (doc.internal.pageSize.getHeight() / 2) - ((contextHeight * mmPerPixel) / 2);
         pdfleftdouble = (doc.internal.pageSize.getWidth() / 2) - ((cardPrintHeight) / 2);
         pdftopdouble = (doc.internal.pageSize.getHeight() / 2) - ((cardPrintWidth * 2) / 2);
     }
@@ -145,7 +145,9 @@ export async function exportDeckForPrint() {
     let pageNumber = 1;
     let isFirstPage = true;
     let deckname = document.getElementById('deckname').value;
-
+    
+    if (deckname == null || deckname == "")
+        deckname = "adventure";
     
     let readme = document.getElementById('readme').value;
     if (readme != null && readme != "") {
@@ -187,9 +189,9 @@ export async function exportDeckForPrint() {
                 backFileName = `${ctitle.value} ${parseInt(index) + 1}(Back).png`
             }
             if (cardThing.doubleSize) {
-                rotateAndPaintImage(hugeContext, bigcan, 90, cardWidth * currentCol, cardHeight * currentRow);
+                rotateAndPaintImage(hugeContext, bigcan, 90, cardWidth * currentCol + (currentCol * 2), cardHeight * currentRow + (currentRow * 2));
                 if (backImg != null) {
-                    rotateAndPaintImage(backContext, backImg, -90,cardWidth * (colCount - currentCol - 2), cardHeight * currentRow, bigcan.width, bigcan.height);
+                    rotateAndPaintImage(backContext, backImg, -90,(cardWidth * (colCount - currentCol - 2)) + ((colCount  - currentCol - 1) * 2), cardHeight * currentRow + (currentRow * 2), bigcan.width, bigcan.height);
                 }
                 currentCol++;
                 if (colCount == 1 && rowCount == 1) {
@@ -198,9 +200,9 @@ export async function exportDeckForPrint() {
                 }
             }
             else {
-                hugeContext.drawImage(bigcan, cardWidth * currentCol, cardHeight * currentRow);
+                hugeContext.drawImage(bigcan, cardWidth * currentCol + (currentCol * 2), cardHeight * currentRow + (currentRow * 2));
                 if (backImg != null) {
-                    backContext.drawImage(backImg, cardWidth * (colCount - currentCol - 1) , cardHeight * currentRow);
+                    backContext.drawImage(backImg, cardWidth * (colCount - currentCol - 1) + ((colCount  - currentCol - 1) * 2), cardHeight * currentRow + (currentRow * 2));
                 }
             }
             if (colCount == 1 && rowCount == 1) {
@@ -290,8 +292,6 @@ export async function exportDeckForPrint() {
     }
     exportProgress(70, "Finished Creating card pages.");
 
-    if (deckname == null || deckname == "")
-        deckname = "adventure";
     if (pdfExport) {
         exportProgress(70, "Generating PDF.");
         imagePages.push({ name: `${deckname}.pdf`, lastModified: new Date(), input: doc.output('blob')});

@@ -1,19 +1,4 @@
-@font-face {
-    font-family: 'QuicksandMedium';
-    src: url('./Quicksand-Medium.ttf');
-}
-@font-face {
-    font-family: 'QuicksandRegular';
-    src: url('./Quicksand-Regular.ttf');
-}
-@font-face {
-    font-family: 'RopaSansRegular';
-    src: url('./RopaSans-Regular.ttf');
-}
-@font-face {
-    font-family: 'Bombardier';
-    src: url('./Bombardier.otf');
-}
+
 
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 

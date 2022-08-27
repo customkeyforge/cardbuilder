@@ -229,7 +229,7 @@ export class CardContainer {
             sublink.textContent = getDescriptionForMenu();
             drawAsync(cardId);
         };
-        doubleSizeCheck.onchange = customTypeName.oninput = cardPower.oninput = cardArmor.oninput = flavorText.oninput = ctraits.oninput = ctext.oninput = throttle(() => {
+        doubleSizeCheck.onchange = customTypeName.oninput = cpower.oninput = carmor.oninput = flavorText.oninput = ctraits.oninput = ctext.oninput = throttle(() => {
             drawAsync(cardId);
         }, 1000);
         customCheck.onchange = (e) => {

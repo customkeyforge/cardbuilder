@@ -136,6 +136,16 @@ async function setup() {
     if(!location.hash) {
         location.hash = "#globalwelcome";
     }
+
+    let fonts = ['Quicksand-Medium.ttf', 'Quicksand-Regular.ttf', 'RopaSans-Regular.ttf', 'Bombardier.otf']
+
+    for (var index in fonts) {
+        var font = fonts[index];
+        var fontname = font.substring(0, font.length - 4).replace('-', '');
+        var newFont = new FontFace(fontname, `url(./${font})`);  
+        var f = await newFont.load();
+        document.fonts.add(f);  
+    }
         
     loadContent();
     
