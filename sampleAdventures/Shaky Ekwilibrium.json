@@ -89,6 +89,76 @@
         "secondaryColor": "7d7d7d",
         "textBackgroundColor": "dcdcdc"
       }
+    },
+    {
+      "cardId": "56deaf37-8993-4751-96e4-a6e87f0dab38",
+      "text": "**Play:** The enemy enrages the player's leftmost token creature, and converts it to an enemy token creature on the enemy's battle line. \n\nIf a creature changed battle lines, and the count is greater than 0, the player gains 1{aember} and repeat this cards entire effect.",
+      "traits": "",
+      "cardType": "Action",
+      "doubleSize": false,
+      "title": "Switch and Bait",
+      "quantity": "1",
+      "power": "",
+      "armor": "",
+      "flavorText": "",
+      "aemberCount": "",
+      "notes": "Notes will be saved in the JSON file."
+    },
+    {
+      "cardId": "e9e2f157-2ba8-492b-a52a-7f5d2ceadeb7",
+      "text": "**Play:** Fully heal each enemy non-token creature. Convert them to token creatures.",
+      "traits": "",
+      "cardType": "Action",
+      "doubleSize": false,
+      "title": "Flood the Market",
+      "quantity": "1",
+      "power": "",
+      "armor": "",
+      "flavorText": "",
+      "aemberCount": "",
+      "notes": "Notes will be saved in the JSON file."
+    },
+    {
+      "cardId": "2b2631b9-211b-4ca4-bf05-38d718aab8e5",
+      "text": "**Play:** If the count is greater than zero, ward the two leftmost enemy token creatures and deal damage to each token creature equal to the count.",
+      "traits": "",
+      "cardType": "Action",
+      "doubleSize": false,
+      "title": "Bear Market",
+      "quantity": "1",
+      "power": "",
+      "armor": "",
+      "flavorText": "",
+      "aemberCount": "",
+      "notes": "Notes will be saved in the JSON file."
+    },
+    {
+      "cardId": "76d8312e-10bd-4ab9-8467-b04edd0518f0",
+      "text": "**Play:** The enemy makes a token creature. If the count is greater than zero, repeat this card's entire effect.",
+      "traits": "",
+      "cardType": "Action",
+      "doubleSize": false,
+      "title": "Bull Market",
+      "quantity": "1",
+      "power": "",
+      "armor": "",
+      "flavorText": "",
+      "aemberCount": "",
+      "notes": "Notes will be saved in the JSON file."
+    },
+    {
+      "cardId": "0221ca61-c798-4601-9a1d-5095d7c4616f",
+      "text": "The first token creature created per turn enters play ready.\n\nThe leftmost enemy token creature gains: **Fight/Reap:** The enemy creates a token creature.",
+      "traits": "",
+      "cardType": "Artifact",
+      "doubleSize": false,
+      "title": "Liquid Assets",
+      "quantity": "1",
+      "power": "",
+      "armor": "",
+      "flavorText": "",
+      "aemberCount": "",
+      "notes": "Notes will be saved in the JSON file."
     }
   ],
   "images": {
@@ -119,6 +189,26 @@
     "93728ada-ed85-4d33-8ff9-9ca23874216d": {
       "changeTime": "Fri, 26 Aug 2022 22:38:58 GMT",
       "hash": -1694823997
+    },
+    "56deaf37-8993-4751-96e4-a6e87f0dab38": {
+      "changeTime": "Thu, 08 Sep 2022 22:47:43 GMT",
+      "hash": -210297238
+    },
+    "e9e2f157-2ba8-492b-a52a-7f5d2ceadeb7": {
+      "changeTime": "Thu, 08 Sep 2022 22:47:43 GMT",
+      "hash": 1791571542
+    },
+    "2b2631b9-211b-4ca4-bf05-38d718aab8e5": {
+      "changeTime": "Thu, 08 Sep 2022 22:47:43 GMT",
+      "hash": 641278446
+    },
+    "76d8312e-10bd-4ab9-8467-b04edd0518f0": {
+      "changeTime": "Thu, 08 Sep 2022 22:47:43 GMT",
+      "hash": -183853311
+    },
+    "0221ca61-c798-4601-9a1d-5095d7c4616f": {
+      "changeTime": "Thu, 08 Sep 2022 22:47:43 GMT",
+      "hash": -1321821306
     }
   }
 }
