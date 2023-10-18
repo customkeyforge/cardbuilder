@@ -20,6 +20,22 @@
         "isstandard": "true"
     },
     {
+        "name": "Ekwidon",
+        "primaryColor": "b7672a",
+        "secondaryColor": "c82127",
+        "textBackgroundColor": "efe1b9",
+        "iconname": "ekwidon_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
+        "name": "Geistoid",
+        "primaryColor": "874493",
+        "secondaryColor": "faeb00",
+        "textBackgroundColor": "dbced8",
+        "iconname": "ekwidon_faction_icon.png",
+        "isstandard": "true"
+    },
+    {
         "name": "Logos",
         "primaryColor": "009cc6",
         "secondaryColor": "d97431",
