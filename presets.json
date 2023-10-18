@@ -21,9 +21,9 @@
     },
     {
         "name": "Ekwidon",
-        "primaryColor": "b7672a",
-        "secondaryColor": "c82127",
-        "textBackgroundColor": "efe1b9",
+        "primaryColor": "b36223",
+        "secondaryColor": "a91e1f",
+        "textBackgroundColor": "e0f1e7",
         "iconname": "ekwidon_faction_icon.png",
         "isstandard": "true"
     },
